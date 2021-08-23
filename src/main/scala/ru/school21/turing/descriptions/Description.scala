@@ -11,7 +11,7 @@ case class Description[T](
                          initial: Option[String],
                          finals: Option[List[String]],
                          transitions: Option[T]
-                       )
+                       ) extends Validated
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 }

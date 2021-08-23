@@ -8,7 +8,7 @@ case class UnarySub(
                      eraseone: Option[List[Transition]],
                      subone: Option[List[Transition]],
                      skip: Option[List[Transition]]
-                   )
+                   ) extends Validated
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 }

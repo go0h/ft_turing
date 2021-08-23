@@ -8,7 +8,7 @@ case class Transition(
                        toState: Option[String],
                        write: Option[String],
                        action: Option[String]
-                     )
+                     ) extends Validated
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 }
