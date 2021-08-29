@@ -31,7 +31,6 @@ object Main {
         .transformField(transformFields)
         .extract[Description[UnarySub]]
       description.validate()
-      println(description)
     } catch {
       case e: FileNotFoundException => println(e.getMessage)
       case e: JsonParseException => println(e.getMessage)
