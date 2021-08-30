@@ -21,7 +21,10 @@ case class UnarySub(
           case Some(value) =>
             value match {
               case transitions: List[Transition] => println("List[Transition]")
-                transitions.foreach(_.validate())
+                if (transitions.isEmpty)
+                  throw new EmptyFieldException(field.getName, getClass.getSimpleName)
+                else
+                  transitions.foreach(_.validate())
               case wrong => throw new WrongFieldTypeException(field, wrong.getClass)
             }
           case None => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
