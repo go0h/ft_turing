@@ -18,7 +18,7 @@ class DescriptionTest extends AnyFunSuite {
       .reduce(_ + _)
   }
 
-  def getParsedDescription[T](filename: String): Description[T] = {
+  def getParsedDescription[T : Manifest](filename: String): Description[T] = {
     val json = getJSONString(filename)
     parse(json).transformField(transformFields)
       .extract[Description[T]]

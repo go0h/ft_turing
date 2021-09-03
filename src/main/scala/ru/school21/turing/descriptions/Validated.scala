@@ -19,6 +19,9 @@ trait Validated {
               case list: List[String] => println("List[String]")
                 if (list.isEmpty)
                   throw new EmptyFieldException(field.getName, getClass.getSimpleName)
+                else
+                  list.foreach(x =>
+                    if (x.trim.isEmpty) throw new EmptyFieldException(field.getName, getClass.getSimpleName))
               case wrong => throw new WrongFieldTypeException(field, wrong.getClass)
             }
           case None => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
