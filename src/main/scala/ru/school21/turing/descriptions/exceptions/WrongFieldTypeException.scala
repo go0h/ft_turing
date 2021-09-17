@@ -1,6 +1,6 @@
 package ru.school21.turing.descriptions.exceptions
 
-import java.lang.reflect.{Field, Type}
+import java.lang.reflect.Field
 
 class WrongFieldTypeException(field: Field, need: Class[_]) extends Exception {
 

@@ -30,6 +30,8 @@ object Main {
       val description = parse(jsonString)
         .transformField(transformFields)
         .extract[Description[UnarySub]]
+
+//      println(description.states.get.contains(description.initial.get))
       description.validate()
     } catch {
       case e: FileNotFoundException => println(e.getMessage)

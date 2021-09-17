@@ -13,18 +13,23 @@ case class UnarySub(
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 
-  override def validate(): Unit = {
+  override def checkFieldsType(): Unit = {
     getClass.getDeclaredFields.foreach {
       field => print(s"${getClass.getSimpleName} ${field.getName}: ")
         field.setAccessible(true)
         field.get(this) match {
           case Some(value) =>
             value match {
-              case transitions: List[Transition] => println("List[Transition]")
+              case transitions: List[_] => println("List[Transition]")
                 if (transitions.isEmpty)
                   throw new EmptyFieldException(field.getName, getClass.getSimpleName)
                 else
-                  transitions.foreach(_.validate())
+                  transitions.foreach(x => {
+                    if (!x.isInstanceOf[Transition])
+                      throw new WrongFieldTypeException(field, Transition.getClass)
+                    x.asInstanceOf[Transition].checkFieldsType()
+                    }
+                  )
               case wrong => throw new WrongFieldTypeException(field, wrong.getClass)
             }
           case None => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
