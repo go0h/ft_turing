@@ -7,6 +7,7 @@ import org.json4s.jackson.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.funsuite.AnyFunSuite
 import ru.school21.turing.descriptions.exceptions._
+import ru.school21.turing.descriptions.transitions.{Transition, UnarySub}
 
 class DescriptionTest extends AnyFunSuite {
 
@@ -21,11 +22,11 @@ class DescriptionTest extends AnyFunSuite {
 
   def getJSONString(filename: String): String = {
     Source.fromResource(filename)
-      .getLines
+      .getLines()
       .reduce(_ + _)
   }
 
-  def getParsedDescription[T : Manifest](filename: String): Description[T] = {
+  def getParsedDescription[T: Manifest](filename: String): Description[T] = {
     val json = getJSONString(filename)
     parse(json).transformField(transformFields)
       .extract[Description[T]]
@@ -78,13 +79,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check blank") {
 
     val description = Description[UnarySub](
-      Option("unary_sub"),
-      Option(List("blank", "init")),
-      Option("blnk"),
-      Option(List("final")),
-      Option("init"),
-      Option(List("final")),
-      Option(unarySubEmpty)
+      name = Option("unary_sub"),
+      alphabet = Option(List("blank", "init")),
+      blank = Option("blnk"),
+      states = Option(List("final", "int1")),
+      initial = Option("int"),
+      finals = Option(List("final")),
+      transitions = None // Option(unarySubEmpty)
     )
 
     assertThrows[TuringLogicException](
@@ -95,13 +96,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check initial") {
 
     val description = Description[UnarySub](
-      Option("unary_sub"),
-      Option(List("blank", "init")),
-      Option("blank"),
-      Option(List("final", "int")),
-      Option("int"),
-      Option(List("final")),
-      Option(unarySubEmpty)
+      name = Option("unary_sub"),
+      alphabet = Option(List("blank", "init")),
+      blank = Option("blank"),
+      states = Option(List("final", "int1")),
+      initial = Option("int"),
+      finals = Option(List("final")),
+      transitions = Option(unarySubEmpty)
     )
 
     assertThrows[TuringLogicException](
@@ -109,16 +110,16 @@ class DescriptionTest extends AnyFunSuite {
     )
   }
 
-  test("Check initial") {
+  test("Check finals") {
 
     val description = Description[UnarySub](
-      Option("unary_sub"),
-      Option(List("blank", "init", "final")),
-      Option("blank"),
-      Option(List("final")),
-      Option("int"),
-      Option(List("finl")),
-      Option(unarySubEmpty)
+      name = Option("unary_sub"),
+      alphabet = Option(List("blank", "init")),
+      blank = Option("blank"),
+      states = Option(List("final1", "int1")),
+      initial = Option("int"),
+      finals = Option(List("final")),
+      transitions = Option(unarySubEmpty)
     )
 
     assertThrows[TuringLogicException](
@@ -126,5 +127,20 @@ class DescriptionTest extends AnyFunSuite {
     )
   }
 
+  test("Check READ and WRITE states") {
 
+    val description = Description[UnarySub](
+      name = Option("unary_sub"),
+      alphabet = Option(List("blank", "init")),
+      blank = Option("blank"),
+      states = Option(List("final1", "int1")),
+      initial = Option("int"),
+      finals = Option(List("final")),
+      transitions = Option(unarySubEmpty)
+    )
+
+    assertThrows[TuringLogicException](
+      description.checkTransitions()
+    )
+  }
 }

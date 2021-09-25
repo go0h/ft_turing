@@ -5,7 +5,7 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
 import scala.util.{Try, Using}
-import ru.school21.turing.descriptions.{Description, UnarySub, transformFields}
+import ru.school21.turing.descriptions.{Description, transformFields}
 
 import java.io.FileNotFoundException
 
@@ -29,9 +29,10 @@ object Main {
 
       val description = parse(jsonString)
         .transformField(transformFields)
-        .extract[Description[UnarySub]]
+        .extract[Description[String]]
+        .parseTransitions()
 
-//      println(description.states.get.contains(description.initial.get))
+      println(description)
       description.validate()
     } catch {
       case e: FileNotFoundException => println(e.getMessage)

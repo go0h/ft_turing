@@ -1,8 +1,10 @@
 package ru.school21.turing.descriptions
 
 import org.json4s._
+import org.json4s.jackson.JsonMethods._
 import org.json4s.jackson.Serialization.writePretty
-import ru.school21.turing.descriptions.exceptions.TuringLogicException
+import ru.school21.turing.descriptions.exceptions._
+import ru.school21.turing.descriptions.transitions._
 
 case class Description[T](
                          name: Option[String],
@@ -16,12 +18,27 @@ case class Description[T](
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 
+  def parseTransitions(): Description[Transitions] = {
+
+    val t = parse(transitions.get.asInstanceOf[String])
+      .transformField(transformFields)
+
+    implicit val formats: Formats = DefaultFormats
+
+    val transition = name.get.toLowerCase match {
+      case "unary_sub" => t.extract[UnarySub]
+    }
+
+    Description(name, alphabet, blank, states, initial, finals, Option(transition))
+  }
+
+
   def validate(): Unit = {
     checkFieldsType()
     checkBlank()
     checkInitial()
     checkFinals()
-    checkTransitionsNames()
+    checkTransitions()
   }
 
   def checkBlank(): Unit = {
@@ -33,7 +50,6 @@ case class Description[T](
       throw new TuringLogicException(
         s"Blank symbol '$blnk' not in alphabet '${alphbt.mkString(", ")}'"
       )
-    println("Check blank OK")
   }
 
   def checkInitial(): Unit = {
@@ -45,7 +61,6 @@ case class Description[T](
       throw new TuringLogicException(
         s"Initial state '$init' not in allowed states '${stts.mkString(", ")}'"
       )
-    println("Check initial OK")
   }
 
   def checkFinals(): Unit = {
@@ -59,23 +74,34 @@ case class Description[T](
           s"Final state '$finalState' not in allowed states '${stts.mkString(", ")}'"
         )
     })
-    println("Check finals OK")
   }
 
-  def checkTransitionsNames(): Unit = {
+  def checkTransitions(): Unit = {
 
+    val alphbt = alphabet.get
     val stts = states.get
+    val trnsts = transitions.get
 
-    transitions.get
-      .getClass.getFields
-      .map(_.getName)
-      .foreach(field => {
-        if (!stts.contains(field))
+    trnsts
+      .getClass
+      .getDeclaredFields
+      .foreach { field =>
+        field.setAccessible(true)
+
+        if (!stts.contains(field.getName))
           throw new TuringLogicException(
             s"Transition '$field' not in allowed states '${stts.mkString(", ")}'"
           )
+        field.get(trnsts) match {
+          case Some(list: List[_]) =>
+            list.foreach {
+              transition =>
+                transition
+                  .asInstanceOf[Transition]
+                  .checkTransitions(field.getName, alphbt, stts)
+            }
+          case None => throw new WrongFieldTypeException(field, List[String]().getClass)
         }
-      )
-    println("Check Transitions names OK")
+      }
   }
 }
