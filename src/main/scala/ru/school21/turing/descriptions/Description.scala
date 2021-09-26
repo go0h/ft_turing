@@ -7,38 +7,21 @@ import ru.school21.turing.descriptions.exceptions._
 import ru.school21.turing.descriptions.transitions._
 
 case class Description[T](
-                         name: Option[String],
-                         alphabet: Option[List[String]],
-                         blank: Option[String],
-                         states: Option[List[String]],
-                         initial: Option[String],
-                         finals: Option[List[String]],
-                         transitions: Option[T]
-                       ) extends Validated
-{
-  override def toString: String = writePretty(this)(DefaultFormats)
+                           name: Option[String],
+                           alphabet: Option[List[String]],
+                           blank: Option[String],
+                           states: Option[List[String]],
+                           initial: Option[String],
+                           finals: Option[List[String]],
+                           transitions: Option[T]
+                         ) extends NoEmptyFields {
 
-  def parseTransitions(): Description[Transitions] = {
-
-    val t = parse(transitions.get.asInstanceOf[String])
-      .transformField(transformFields)
-
-    implicit val formats: Formats = DefaultFormats
-
-    val transition = name.get.toLowerCase match {
-      case "unary_sub" => t.extract[UnarySub]
-    }
-
-    Description(name, alphabet, blank, states, initial, finals, Option(transition))
-  }
-
-
-  def validate(): Unit = {
+  def validate(): Description[T] = {
     checkFieldsType()
     checkBlank()
     checkInitial()
     checkFinals()
-    checkTransitions()
+    this
   }
 
   def checkBlank(): Unit = {
@@ -76,11 +59,33 @@ case class Description[T](
     })
   }
 
+  def parseTransitions: Description[Transitions] = {
+
+    this.validate()
+
+    val t = parse(transitions.get.asInstanceOf[String])
+      .transformField(transformFields)
+
+    implicit val formats: Formats = DefaultFormats
+
+    val transition = name.get.toLowerCase match {
+      case "unary_sub" => t.extract[UnarySub]
+      case x => throw new IllegalArgumentException(s"Can't find '$x' description")
+    }
+    val tr = transition.asInstanceOf[Transitions]
+
+    Description(name, alphabet, blank, states, initial, finals, Option(tr))
+      .validate()
+  }
+
   def checkTransitions(): Unit = {
 
     val alphbt = alphabet.get
     val stts = states.get
     val trnsts = transitions.get
+    val fnls = finals.get
+
+    var noFinals = true
 
     trnsts
       .getClass
@@ -96,12 +101,22 @@ case class Description[T](
           case Some(list: List[_]) =>
             list.foreach {
               transition =>
-                transition
-                  .asInstanceOf[Transition]
-                  .checkTransitions(field.getName, alphbt, stts)
+                val tr = transition.asInstanceOf[Transition]
+                tr.checkTransitions(field.getName, alphbt, stts)
+
+                noFinals = !fnls.contains(tr.toState.get) || noFinals
             }
           case None => throw new WrongFieldTypeException(field, List[String]().getClass)
         }
       }
+
+    val transitionsName = transitions.get.getClass.getSimpleName
+
+    if (noFinals)
+      throw new TuringLogicException(
+        s"Transition '$transitionsName' has no final state '${finals.mkString(", ")}'"
+      )
   }
+
+  override def toString: String = writePretty(this)(DefaultFormats)
 }

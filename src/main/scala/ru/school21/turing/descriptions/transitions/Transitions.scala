@@ -2,10 +2,10 @@ package ru.school21.turing.descriptions.transitions
 
 import org.json4s.DefaultFormats
 import org.json4s.jackson.Serialization.writePretty
-import ru.school21.turing.descriptions.Validated
+import ru.school21.turing.descriptions.NoEmptyFields
 import ru.school21.turing.descriptions.exceptions._
 
-class Transitions extends Validated {
+class Transitions extends NoEmptyFields {
 
   override def toString: String = writePretty(this)(DefaultFormats)
 

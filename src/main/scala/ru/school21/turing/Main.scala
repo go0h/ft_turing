@@ -30,10 +30,10 @@ object Main {
       val description = parse(jsonString)
         .transformField(transformFields)
         .extract[Description[String]]
-        .parseTransitions()
+        .parseTransitions
 
+      description.checkTransitions()
       println(description)
-      description.validate()
     } catch {
       case e: FileNotFoundException => println(e.getMessage)
       case e: JsonParseException => println(e.getMessage)

@@ -2,7 +2,7 @@ package ru.school21.turing.descriptions.transitions
 
 import org.json4s._
 import org.json4s.jackson.Serialization.writePretty
-import ru.school21.turing.descriptions.Validated
+import ru.school21.turing.descriptions.NoEmptyFields
 import ru.school21.turing.descriptions.exceptions.TuringLogicException
 
 case class Transition(
@@ -10,7 +10,7 @@ case class Transition(
                        toState: Option[String],
                        write: Option[String],
                        action: Option[String]
-                     ) extends Validated
+                     ) extends NoEmptyFields
 {
   override def toString: String = writePretty(this)(DefaultFormats)
 
@@ -29,7 +29,7 @@ case class Transition(
       throw new TuringLogicException(
         s"'to_state' field '${toState.get}' in transition '$field' not in states '${states.mkString(", ")}'"
       )
-    if (!List("RIGHT", "LEFT").contains(action.get))
+    if (!List("RIGHT", "LEFT").contains(action.get.toUpperCase()))
       throw new TuringLogicException(
         s"'action' field '${action.get}' in transition '$field' not in states '${states.mkString(", ")}'"
       )

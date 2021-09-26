@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParseException
 
 import scala.io.Source
 import org.json4s.jackson.JsonMethods.parse
-import org.json4s.{DefaultFormats, Formats}
+import org.json4s.{DefaultFormats, Formats, MappingException}
 import org.scalatest.funsuite.AnyFunSuite
 import ru.school21.turing.descriptions.exceptions._
 import ru.school21.turing.descriptions.transitions.{Transition, UnarySub}
@@ -28,7 +28,8 @@ class DescriptionTest extends AnyFunSuite {
 
   def getParsedDescription[T: Manifest](filename: String): Description[T] = {
     val json = getJSONString(filename)
-    parse(json).transformField(transformFields)
+    parse(json)
+      .transformField(transformFields)
       .extract[Description[T]]
   }
 
@@ -41,39 +42,38 @@ class DescriptionTest extends AnyFunSuite {
   }
 
   test("Empty field - 1") {
-    val res = getParsedDescription[UnarySub]("bad/empty_field_1.json")
     assertThrows[EmptyFieldException] {
-      res.checkFieldsType()
+      getParsedDescription[UnarySub]("bad/empty_field_1.json")
+        .checkFieldsType()
     }
   }
 
   test("Empty field - 2") {
-    val res = getParsedDescription[UnarySub]("bad/empty_field_2.json")
     assertThrows[EmptyFieldException] {
-      res.checkFieldsType()
+      getParsedDescription[UnarySub]("bad/empty_field_2.json")
+        .checkFieldsType()
     }
   }
 
   test("Empty string") {
-    val res = getParsedDescription[UnarySub]("bad/empty_field_3.json")
     assertThrows[EmptyFieldException] {
-      res.checkFieldsType()
+      getParsedDescription[UnarySub]("bad/empty_field_3.json")
+        .checkFieldsType()
     }
   }
 
   test("Empty field List[Transitions]") {
-    val res = getParsedDescription[UnarySub]("bad/empty_list.json")
     assertThrows[EmptyFieldException] {
-      res.checkFieldsType()
+      getParsedDescription[UnarySub]("bad/empty_list.json")
+        .checkFieldsType()
     }
   }
 
   test("Empty JSON") {
-    val json = getJSONString("empty.json")
-    val res = parse(json).transformField(transformFields)
-      .extract[Description[UnarySub]]
-
-    assertThrows[EmptyFieldException](res.checkFieldsType())
+    assertThrows[EmptyFieldException] {
+      getParsedDescription[UnarySub]("empty.json")
+        .checkFieldsType()
+    }
   }
 
   test("Check blank") {
@@ -85,7 +85,7 @@ class DescriptionTest extends AnyFunSuite {
       states = Option(List("final", "int1")),
       initial = Option("int"),
       finals = Option(List("final")),
-      transitions = None // Option(unarySubEmpty)
+      transitions = Option(unarySubEmpty)
     )
 
     assertThrows[TuringLogicException](
@@ -142,5 +142,50 @@ class DescriptionTest extends AnyFunSuite {
     assertThrows[TuringLogicException](
       description.checkTransitions()
     )
+  }
+
+  test("Bad read state - 1") {
+    assertThrows[TuringLogicException] {
+      val res = getParsedDescription[String]("bad/bad_read_state.json")
+        .parseTransitions
+
+      res.checkTransitions()
+    }
+  }
+
+  test("Bad write state - 1") {
+    assertThrows[TuringLogicException] {
+      val res = getParsedDescription[String]("bad/bad_write_state.json")
+        .parseTransitions
+
+      res.checkTransitions()
+    }
+  }
+
+  test("Bad to_state") {
+    assertThrows[TuringLogicException] {
+      val res = getParsedDescription[String]("bad/bad_to_state.json")
+        .parseTransitions
+
+      res.checkTransitions()
+    }
+  }
+
+  test("Bad action") {
+    assertThrows[TuringLogicException] {
+      val res = getParsedDescription[String]("bad/bad_action.json")
+        .parseTransitions
+
+      res.checkTransitions()
+    }
+  }
+
+  test("Has no finals") {
+    assertThrows[TuringLogicException] {
+      val res = getParsedDescription[String]("bad/has_no_finals.json")
+        .parseTransitions
+
+      res.checkTransitions()
+    }
   }
 }

@@ -2,7 +2,7 @@ package ru.school21.turing.descriptions
 
 import ru.school21.turing.descriptions.exceptions._
 
-trait Validated {
+trait NoEmptyFields {
 
   def checkFieldsType(): Unit = {
     getClass.getDeclaredFields.foreach {
@@ -11,7 +11,7 @@ trait Validated {
         field.get(this) match {
           case Some(value) =>
             value match {
-              case validated: Validated => validated.checkFieldsType()
+              case validated: NoEmptyFields => validated.checkFieldsType()
               case string: String =>
                 if (string.trim.isEmpty)
                   throw new EmptyFieldException(field.getName, getClass.getSimpleName)
