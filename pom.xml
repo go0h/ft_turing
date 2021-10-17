@@ -36,6 +36,11 @@
       <artifactId>json4s-jackson_2.13</artifactId>
       <version>4.0.3</version>
     </dependency>
+    <dependency>
+      <groupId>com.github.scopt</groupId>
+      <artifactId>scopt_${scala.compat.version}</artifactId>
+      <version>4.0.1</version>
+    </dependency>
 
   </dependencies>
 

@@ -1,26 +1,24 @@
 package ru.school21.turing
 
-import com.fasterxml.jackson.core.JsonParseException
+import scala.util.{Try, Using}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-
-import scala.util.{Try, Using}
 import ru.school21.turing.descriptions.{Description, transformFields}
-
-import java.io.FileNotFoundException
+import scopt.OParser
 
 object Main {
 
   def main(args: Array[String]): Unit = {
 
-    if (args.length == 0) {
-      println("Usage: ft_turing")
-      System.exit(1)
+    val config: Config = OParser.parse(parser, args, Config()) match {
+      case Some(config) => println(config)
+        config
+      case _ => System.exit(1)
+        Config()
     }
-    println(s"Filename: ${args.head}")
 
     try {
-      val json: Try[String] = Using(io.Source.fromFile(args(0))) {
+      val json: Try[String] = Using(io.Source.fromFile(config.jsonFile)) {
         reader => reader.getLines().reduce(_ + _)
       }
       val jsonString = json.get
@@ -35,8 +33,7 @@ object Main {
       description.checkTransitions()
       println(description)
     } catch {
-      case e: FileNotFoundException => println(e.getMessage)
-      case e: JsonParseException => println(e.getMessage)
+      case e: Exception => println(e.getMessage)
     }
   }
 

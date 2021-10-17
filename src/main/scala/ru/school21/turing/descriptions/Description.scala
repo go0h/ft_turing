@@ -85,7 +85,7 @@ case class Description[T](
     val trnsts = transitions.get
     val fnls = finals.get
 
-    var noFinals = true
+    var hasFinals = false
 
     trnsts
       .getClass
@@ -104,7 +104,7 @@ case class Description[T](
                 val tr = transition.asInstanceOf[Transition]
                 tr.checkTransitions(field.getName, alphbt, stts)
 
-                noFinals = !fnls.contains(tr.toState.get) || noFinals
+                hasFinals = fnls.contains(tr.toState.get) || hasFinals
             }
           case None => throw new WrongFieldTypeException(field, List[String]().getClass)
         }
@@ -112,7 +112,7 @@ case class Description[T](
 
     val transitionsName = transitions.get.getClass.getSimpleName
 
-    if (noFinals)
+    if (!hasFinals)
       throw new TuringLogicException(
         s"Transition '$transitionsName' has no final state '${finals.mkString(", ")}'"
       )
