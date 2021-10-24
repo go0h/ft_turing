@@ -1,13 +1,9 @@
 package ru.school21.turing.descriptions.transitions
 
-import org.json4s.DefaultFormats
-import org.json4s.jackson.Serialization.writePretty
-import ru.school21.turing.descriptions.NoEmptyFields
+import ru.school21.turing.descriptions.JsonStruct
 import ru.school21.turing.descriptions.exceptions._
 
-class Transitions extends NoEmptyFields {
-
-  override def toString: String = writePretty(this)(DefaultFormats)
+trait Transitions extends JsonStruct {
 
   override def checkFieldsType(): Unit = {
     getClass.getDeclaredFields.foreach { field =>
@@ -29,5 +25,19 @@ class Transitions extends NoEmptyFields {
         case None => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
       }
     }
+  }
+
+  override def toString: String = {
+    getClass.getDeclaredFields.map { field =>
+      field.setAccessible(true)
+      field.get(this) match {
+        case Some(value) =>
+          val name = field.getName
+          value.asInstanceOf[List[Transition]]
+            .map(_.getTransitionString(name))
+            .mkString("\n")
+        case _ => s"${field.getName}: NONE"
+      }
+    }.mkString("\n")
   }
 }

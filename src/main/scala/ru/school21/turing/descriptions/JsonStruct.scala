@@ -1,8 +1,10 @@
 package ru.school21.turing.descriptions
 
+import org.json4s.DefaultFormats
+import org.json4s.jackson.Serialization.writePretty
 import ru.school21.turing.descriptions.exceptions._
 
-trait NoEmptyFields {
+trait JsonStruct {
 
   def checkFieldsType(): Unit = {
     getClass.getDeclaredFields.foreach {
@@ -11,7 +13,7 @@ trait NoEmptyFields {
         field.get(this) match {
           case Some(value) =>
             value match {
-              case validated: NoEmptyFields => validated.checkFieldsType()
+              case validated: JsonStruct => validated.checkFieldsType()
               case string: String =>
                 if (string.trim.isEmpty)
                   throw new EmptyFieldException(field.getName, getClass.getSimpleName)
@@ -32,4 +34,6 @@ trait NoEmptyFields {
         }
     }
   }
+
+  def toJSON: String = writePretty(this)(DefaultFormats)
 }

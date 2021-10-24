@@ -5,7 +5,7 @@ import scopt.{OParser, OParserBuilder}
 package object turing {
 
   case class Config(
-                     jsonFile: String = "",
+                     description: String = "",
                      input: String = "",
                      verbose: Boolean = false,
                      debug: Boolean = false)
@@ -17,7 +17,7 @@ package object turing {
       programName("ft_turing"),
       arg[String]("jsonFile")
         .required()
-        .action((x, c) => c.copy(jsonFile = x))
+        .action((x, c) => c.copy(description = x))
         .text("json description of the machine"),
       arg[String]("input")
         .optional()

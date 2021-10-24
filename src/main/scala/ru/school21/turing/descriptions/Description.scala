@@ -2,7 +2,6 @@ package ru.school21.turing.descriptions
 
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-import org.json4s.jackson.Serialization.writePretty
 import ru.school21.turing.descriptions.exceptions._
 import ru.school21.turing.descriptions.transitions._
 
@@ -14,7 +13,7 @@ case class Description[T](
                            initial: Option[String],
                            finals: Option[List[String]],
                            transitions: Option[T]
-                         ) extends NoEmptyFields {
+                         ) extends JsonStruct {
 
   def validate(): Description[T] = {
     checkFieldsType()
@@ -118,5 +117,20 @@ case class Description[T](
       )
   }
 
-  override def toString: String = writePretty(this)(DefaultFormats)
+  override def toString: String = {
+    val width = name.get.length
+    s"""${"*" * 80}
+       |*${" " * 78}*
+       |*${" " * (39 - width / 2 - width % 2)}${name.get}${" " * (39 - width / 2)}*
+       |*${" " * 78}*
+       |${"*" * 80}
+       |Alphabet: ${alphabet.get.mkString("[ ", ", ", " ]")}
+       |States:   ${states.get.mkString("[ ", ", ", " ]")}
+       |Initial:  ${initial.get}
+       |Finals:   ${finals.get.mkString("[ ", ", ", " ]")}
+       |${"*" * 80}
+       |${transitions.get.toString}
+       |${"*" * 80}"""
+      .stripMargin
+  }
 }

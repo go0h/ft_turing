@@ -18,7 +18,7 @@ object Main {
     }
 
     try {
-      val json: Try[String] = Using(io.Source.fromFile(config.jsonFile)) {
+      val json: Try[String] = Using(io.Source.fromFile(config.description)) {
         reader => reader.getLines().reduce(_ + _)
       }
       val jsonString = json.get
@@ -29,12 +29,11 @@ object Main {
         .transformField(transformFields)
         .extract[Description[String]]
         .parseTransitions
-
       description.checkTransitions()
+
       println(description)
     } catch {
       case e: Exception => println(e.getMessage)
     }
   }
-
 }

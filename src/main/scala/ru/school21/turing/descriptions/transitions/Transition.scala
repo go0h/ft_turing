@@ -1,8 +1,6 @@
 package ru.school21.turing.descriptions.transitions
 
-import org.json4s._
-import org.json4s.jackson.Serialization.writePretty
-import ru.school21.turing.descriptions.NoEmptyFields
+import ru.school21.turing.descriptions.JsonStruct
 import ru.school21.turing.descriptions.exceptions.TuringLogicException
 
 case class Transition(
@@ -10,10 +8,7 @@ case class Transition(
                        toState: Option[String],
                        write: Option[String],
                        action: Option[String]
-                     ) extends NoEmptyFields
-{
-  override def toString: String = writePretty(this)(DefaultFormats)
-
+                     ) extends JsonStruct {
 
   def checkTransitions(field: String, alphabet: List[String], states: List[String]): Unit = {
 
@@ -33,5 +28,9 @@ case class Transition(
       throw new TuringLogicException(
         s"'action' field '${action.get}' in transition '$field' not in states '${states.mkString(", ")}'"
       )
+  }
+
+  def getTransitionString(name: String): String = {
+    s"($name, ${read.get}) -> (${toState.get}, ${write.get}, ${action.get})"
   }
 }
