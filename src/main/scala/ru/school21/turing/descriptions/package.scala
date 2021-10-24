@@ -8,6 +8,5 @@ package object descriptions {
 
   val transformFields: PartialFunction[JField, JField] = {
     case ("to_state", x) => ("toState", x)
-    case ("transitions", x) => ("transitions", JString(writePretty(x)(DefaultFormats)))
   }
 }

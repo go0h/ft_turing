@@ -27,9 +27,8 @@ object Main {
 
       val description = parse(jsonString)
         .transformField(transformFields)
-        .extract[Description[String]]
-        .parseTransitions
-      description.checkTransitions()
+        .extract[Description]
+        .validate()
 
       println(description)
     } catch {

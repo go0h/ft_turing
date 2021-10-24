@@ -1,8 +1,7 @@
 package ru.school21.turing.processor
 
-import ru.school21.turing.descriptions.Description
-import ru.school21.turing.descriptions.transitions.Transition
+import ru.school21.turing.descriptions.{Description, Transition}
 
-class TuringProcessor(decsription: Description[Transition], input: String) {
+class TuringProcessor(decsription: Description, input: String) {
   def process(): Unit = {}
 }

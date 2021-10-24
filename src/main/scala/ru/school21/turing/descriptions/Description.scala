@@ -1,25 +1,23 @@
 package ru.school21.turing.descriptions
 
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
 import ru.school21.turing.descriptions.exceptions._
-import ru.school21.turing.descriptions.transitions._
 
-case class Description[T](
+case class Description(
                            name: Option[String],
                            alphabet: Option[List[String]],
                            blank: Option[String],
                            states: Option[List[String]],
                            initial: Option[String],
                            finals: Option[List[String]],
-                           transitions: Option[T]
+                           transitions: Option[Map[String, List[Transition]]]
                          ) extends JsonStruct {
 
-  def validate(): Description[T] = {
-    checkFieldsType()
+  def validate(): Description = {
+    checkEmptyFields()
     checkBlank()
     checkInitial()
     checkFinals()
+    checkTransitions()
     this
   }
 
@@ -58,25 +56,6 @@ case class Description[T](
     })
   }
 
-  def parseTransitions: Description[Transitions] = {
-
-    this.validate()
-
-    val t = parse(transitions.get.asInstanceOf[String])
-      .transformField(transformFields)
-
-    implicit val formats: Formats = DefaultFormats
-
-    val transition = name.get.toLowerCase match {
-      case "unary_sub" => t.extract[UnarySub]
-      case x => throw new IllegalArgumentException(s"Can't find '$x' description")
-    }
-    val tr = transition.asInstanceOf[Transitions]
-
-    Description(name, alphabet, blank, states, initial, finals, Option(tr))
-      .validate()
-  }
-
   def checkTransitions(): Unit = {
 
     val alphbt = alphabet.get
@@ -87,33 +66,24 @@ case class Description[T](
     var hasFinals = false
 
     trnsts
-      .getClass
-      .getDeclaredFields
       .foreach { field =>
-        field.setAccessible(true)
-
-        if (!stts.contains(field.getName))
+        if (!stts.contains(field._1))
           throw new TuringLogicException(
-            s"Transition '$field' not in allowed states '${stts.mkString(", ")}'"
+            s"Transition '${field._1}' not in allowed states '${stts.mkString(", ")}'"
           )
-        field.get(trnsts) match {
-          case Some(list: List[_]) =>
+        field._2 match {
+          case list: List[_] =>
             list.foreach {
-              transition =>
-                val tr = transition.asInstanceOf[Transition]
-                tr.checkTransitions(field.getName, alphbt, stts)
-
-                hasFinals = fnls.contains(tr.toState.get) || hasFinals
+              transition: Transition =>
+                transition.checkTransitions(field._1, alphbt, stts)
+                hasFinals = fnls.contains(transition.toState.get) || hasFinals
             }
-          case None => throw new WrongFieldTypeException(field, List[String]().getClass)
         }
       }
 
-    val transitionsName = transitions.get.getClass.getSimpleName
-
     if (!hasFinals)
       throw new TuringLogicException(
-        s"Transition '$transitionsName' has no final state '${finals.mkString(", ")}'"
+        s"Transitions has no final state '${finals.mkString(", ")}'"
       )
   }
 
@@ -129,7 +99,7 @@ case class Description[T](
        |Initial:  ${initial.get}
        |Finals:   ${finals.get.mkString("[ ", ", ", " ]")}
        |${"*" * 80}
-       |${transitions.get.toString}
+       |${transitions.get.flatMap(x => x._2.map(_.getTransitionString(x._1))).mkString("\n")}
        |${"*" * 80}"""
       .stripMargin
   }

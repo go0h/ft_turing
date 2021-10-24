@@ -1,6 +1,5 @@
-package ru.school21.turing.descriptions.transitions
+package ru.school21.turing.descriptions
 
-import ru.school21.turing.descriptions.JsonStruct
 import ru.school21.turing.descriptions.exceptions.TuringLogicException
 
 case class Transition(
@@ -26,7 +25,7 @@ case class Transition(
       )
     if (!List("RIGHT", "LEFT").contains(action.get.toUpperCase()))
       throw new TuringLogicException(
-        s"'action' field '${action.get}' in transition '$field' not in states '${states.mkString(", ")}'"
+        s"'action' field '${action.get}' in transition '$field' not in states 'RIGHT, LEFT'"
       )
   }
 

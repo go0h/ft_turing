@@ -6,31 +6,35 @@ import ru.school21.turing.descriptions.exceptions._
 
 trait JsonStruct {
 
-  def checkFieldsType(): Unit = {
+  def checkEmptyFields(): Unit = {
+
     getClass.getDeclaredFields.foreach {
       field =>
         field.setAccessible(true)
         field.get(this) match {
           case Some(value) =>
             value match {
-              case validated: JsonStruct => validated.checkFieldsType()
-              case string: String =>
-                if (string.trim.isEmpty)
-                  throw new EmptyFieldException(field.getName, getClass.getSimpleName)
-              case list: List[_] =>
-                if (list.isEmpty)
-                  throw new EmptyFieldException(field.getName, getClass.getSimpleName)
-                else
-                  list.foreach(x => {
-                    if (!x.isInstanceOf[String])
-                      throw new WrongFieldTypeException(field, getClass)
-                    if (x.asInstanceOf[String].trim.isEmpty)
-                      throw new EmptyFieldException(field.getName, getClass.getSimpleName)
-                    }
-                  )
-              case wrong => throw new WrongFieldTypeException(field, wrong.getClass)
+              case jsonStruct: JsonStruct => jsonStruct.checkEmptyFields()
+              case string: String if string.trim.nonEmpty =>
+              case list: List[_] if list.nonEmpty =>
+                list.foreach {
+                  case state: String if state.trim.nonEmpty =>
+                  case _ => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
+                }
+              case map: Map[_,_] if map.nonEmpty =>
+                map.foreach(x => {
+                  x._2 match {
+                    case transitions: List[_] if transitions.nonEmpty =>
+                      transitions.foreach {
+                        case tr: Transition => tr.checkEmptyFields()
+                        case _ => throw new EmptyFieldException(x._1.toString, getClass.getSimpleName)
+                      }
+                    case _ => throw new EmptyFieldException(x._1.toString, getClass.getSimpleName)
+                  }
+                })
+              case _ => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
             }
-          case None => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
+          case _ => throw new EmptyFieldException(field.getName, getClass.getSimpleName)
         }
     }
   }
