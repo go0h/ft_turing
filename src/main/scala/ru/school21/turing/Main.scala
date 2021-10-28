@@ -31,9 +31,8 @@ object Main {
         .validate()
 
       println(description)
-
-      val processor = TuringProcessor(description, config.input)
-      processor.process()
+      TuringProcessor(description, config.input)
+        .process()
     } catch {
       case e: Exception => println(e.getMessage)
     }

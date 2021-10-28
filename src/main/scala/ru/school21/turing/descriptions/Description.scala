@@ -87,15 +87,17 @@ case class Description(
       )
   }
 
-  def getTransitions(name: String): List[Transition] = transitions.get(name)
+  def getTransitions(name: Option[String]): List[Transition] = transitions.get(name.getOrElse(""))
 
-  def getTransition(name: String, read: String): Transition = {
+  def getTransition(name: Option[String], read: String): Transition = {
     getTransitions(name)
       .filter(_.read.get.equals(read))
       .head
   }
 
-  def isFinals(transitionName: String): Boolean = finals.get.contains(transitionName)
+  def isFinals(transitionName: Option[String]): Boolean = {
+    finals.get.contains(transitionName.getOrElse(""))
+  }
 
   override def toString: String = {
     val width = name.get.length
@@ -109,7 +111,7 @@ case class Description(
        |Initial:  ${initial.get}
        |Finals:   ${finals.get.mkString("[ ", ", ", " ]")}
        |${"*" * 80}
-       |${transitions.get.flatMap(x => x._2.map(_.getTransitionString(x._1))).mkString("\n")}
+       |${transitions.get.flatMap(x => x._2.map(_.getTransitionString(Option(x._1)))).mkString("\n")}
        |${"*" * 80}"""
       .stripMargin
   }

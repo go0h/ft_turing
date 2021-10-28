@@ -29,7 +29,7 @@ case class Transition(
       )
   }
 
-  def getTransitionString(name: String): String = {
-    s"($name, ${read.get}) -> (${toState.get}, ${write.get}, ${action.get})"
+  def getTransitionString(name: Option[String]): String = {
+    s"(${name.get}, ${read.get}) -> (${toState.get}, ${write.get}, ${action.get})"
   }
 }

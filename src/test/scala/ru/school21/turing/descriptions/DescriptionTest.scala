@@ -7,8 +7,9 @@ import org.json4s.jackson.JsonMethods.parse
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatest.funsuite.AnyFunSuite
 import ru.school21.turing.descriptions.exceptions._
+import ru.school21.turing.descriptions.DescriptionTest._
 
-class DescriptionTest extends AnyFunSuite {
+object DescriptionTest {
 
   implicit val formats: Formats = DefaultFormats
 
@@ -24,6 +25,9 @@ class DescriptionTest extends AnyFunSuite {
       .transformField(transformFields)
       .extract[Description]
   }
+}
+
+class DescriptionTest extends AnyFunSuite {
 
   test("Bad JSON - 1") {
     val json = getJSONString("bad/unary_sub_1.json")

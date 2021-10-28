@@ -21,8 +21,8 @@ class Tape(in: String) {
       case _ => throw new IllegalArgumentException(s"Wrong direction: $direction")
     }
 
-//    if (pos < 0 || pos >= tape.length)
-//      throw new IndexOutOfBoundsException
+    if (pos < 0 || pos >= tape.length)
+      throw new IndexOutOfBoundsException(s"Error: End of tape. Position = $pos")
   }
 
   def cur: String = tape(pos)

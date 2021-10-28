@@ -1,5 +1,6 @@
 package ru.school21.turing.processor
 
+import scala.annotation.tailrec
 import ru.school21.turing.descriptions.{Description, Transition}
 
 class TuringProcessor(description: Description, tape: Tape) {
@@ -12,19 +13,16 @@ class TuringProcessor(description: Description, tape: Tape) {
   }
 
   def process(): Unit = {
+    process(description.getTransition(description.initial, tape.cur), description.initial)
+  }
 
-    var transitionName: String = description.initial.get
-    var transition: Transition = description.getTransition(transitionName, tape.cur)
-
-    while(!description.isFinals(transition.toState.get)) {
-
-      println(s"$tape ${transition.getTransitionString(transitionName)}")
-      tape.apply(transition)
-
-      transitionName = transition.toState.get
-      transition = description.getTransition(transitionName, tape.cur)
-    }
+  @tailrec
+  private def process(transition: Transition, transitionName: Option[String]): Unit = {
     println(s"$tape ${transition.getTransitionString(transitionName)}")
+    if (!description.isFinals(transition.toState)) {
+      tape.apply(transition)
+      process(description.getTransition(transition.toState, tape.cur), transition.toState)
+    }
   }
 }
 
