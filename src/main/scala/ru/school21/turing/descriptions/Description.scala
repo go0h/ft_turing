@@ -3,14 +3,14 @@ package ru.school21.turing.descriptions
 import ru.school21.turing.descriptions.exceptions._
 
 case class Description(
-                           name: Option[String],
-                           alphabet: Option[List[String]],
-                           blank: Option[String],
-                           states: Option[List[String]],
-                           initial: Option[String],
-                           finals: Option[List[String]],
-                           transitions: Option[Map[String, List[Transition]]]
-                         ) extends JsonStruct {
+                        name: Option[String],
+                        alphabet: Option[List[String]],
+                        blank: Option[String],
+                        states: Option[List[String]],
+                        initial: Option[String],
+                        finals: Option[List[String]],
+                        transitions: Option[Map[String, List[Transition]]]
+                      ) extends JsonStruct {
 
   def validate(): Description = {
     checkEmptyFields()
@@ -94,6 +94,8 @@ case class Description(
       .filter(_.read.get.equals(read))
       .head
   }
+
+  def isFinals(transitionName: String): Boolean = finals.get.contains(transitionName)
 
   override def toString: String = {
     val width = name.get.length

@@ -1,10 +1,11 @@
 package ru.school21.turing
 
 import scala.util.{Try, Using}
+import scopt.OParser
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import ru.school21.turing.descriptions.{Description, transformFields}
-import scopt.OParser
+import ru.school21.turing.processor.TuringProcessor
 
 object Main {
 
@@ -29,8 +30,10 @@ object Main {
         .extract[Description]
         .validate()
 
-      println("VALIDATION - OK")
       println(description)
+
+      val processor = TuringProcessor(description, config.input)
+      processor.process()
     } catch {
       case e: Exception => println(e.getMessage)
     }
