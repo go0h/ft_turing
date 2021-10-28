@@ -87,6 +87,14 @@ case class Description(
       )
   }
 
+  def getTransitions(name: String): List[Transition] = transitions.get(name)
+
+  def getTransition(name: String, read: String): Transition = {
+    getTransitions(name)
+      .filter(_.read.get.equals(read))
+      .head
+  }
+
   override def toString: String = {
     val width = name.get.length
     s"""${"*" * 80}

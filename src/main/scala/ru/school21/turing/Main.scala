@@ -11,8 +11,7 @@ object Main {
   def main(args: Array[String]): Unit = {
 
     val config: Config = OParser.parse(parser, args, Config()) match {
-      case Some(config) => println(config)
-        config
+      case Some(config) => config
       case _ => System.exit(1)
         Config()
     }
@@ -30,6 +29,7 @@ object Main {
         .extract[Description]
         .validate()
 
+      println("VALIDATION - OK")
       println(description)
     } catch {
       case e: Exception => println(e.getMessage)
