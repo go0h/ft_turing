@@ -1,8 +1,6 @@
 package ru.school21.turing
 
-import org.json4s.{DefaultFormats, JField}
-import org.json4s.JsonAST.{JObject, JString}
-import org.json4s.jackson.Serialization.writePretty
+import org.json4s.JField
 
 package object descriptions {
 

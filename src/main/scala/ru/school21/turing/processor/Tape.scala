@@ -7,14 +7,31 @@ import scala.language.implicitConversions
 class Tape(in: String) {
 
   private var pos = 0
+  val tape: Array[String] = createTapeFromInput
 
-  if (in == null || in.trim.isEmpty)
-    throw new RuntimeException("Input string is empty")
+  def cur: String = tape(pos)
 
-  val tape: Array[String] = (in + ("." * ((if (in.length + 2 < 30) 30 else in.length + 5) - in.length)))
-    .map(_.toString).toArray
+  def cur(s: String): Unit = tape(pos) = s
 
-  def shift(direction: String): Unit = {
+  def apply(transitions: Seq[Transition]): Unit = { }
+
+  def apply(transition: Transition): Unit = {
+    tape(pos) = transition.write.get
+    shift(transition.action.get)
+  }
+
+  private def createTapeFromInput: Array[String] = {
+
+    val shortedIn = if (in.contains(";;")) in.substring(0, in.indexOf(";;")) else in
+
+    if (shortedIn == null || shortedIn.trim.isEmpty)
+      throw new IllegalArgumentException("Tape is empty")
+
+    (shortedIn + ("." * ((if (shortedIn.length + 2 < 30) 30 else shortedIn.length + 5) - shortedIn.length)))
+      .map(_.toString).toArray
+  }
+
+  private def shift(direction: String): Unit = {
     direction.toLowerCase match {
       case "left" => pos -= 1
       case "right" => pos += 1
@@ -23,16 +40,6 @@ class Tape(in: String) {
 
     if (pos < 0 || pos >= tape.length)
       throw new IndexOutOfBoundsException(s"Error: End of tape. Position = $pos")
-  }
-
-  def cur: String = tape(pos)
-  def cur(s: String): Unit = tape(pos) = s
-
-  def apply(transitions: Seq[Transition]): Unit = { }
-
-  def apply(transition: Transition): Unit = {
-    tape(pos) = transition.write.get
-    shift(transition.action.get)
   }
 
   override def toString: String = {

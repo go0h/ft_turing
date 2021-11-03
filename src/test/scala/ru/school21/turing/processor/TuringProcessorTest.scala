@@ -28,10 +28,50 @@ object TuringProcessorTest {
 
 class TuringProcessorTest extends AnyFunSuite {
 
+  val unarySub: Description = getParsedDescription("resources/unary_sub.json")
+
   test("Wrong input char - 1") {
-    val description = getParsedDescription("resources/unary_sub.json")
     assertThrows[IllegalArgumentException]{
-      TuringProcessor(description, "1112-1=")
+      TuringProcessor(unarySub, "1112-1=")
+    }
+  }
+
+  test("Wrong input char - 2") {
+    assertThrows[IllegalArgumentException]{
+      TuringProcessor(unarySub, "11;-1=")
+    }
+  }
+
+  test("Out of bounds - 30") {
+    assertThrows[IndexOutOfBoundsException]{
+      TuringProcessor(unarySub, "11-11")
+        .process()
+    }
+  }
+
+  test("Out of bounds - 31") {
+    assertThrows[IndexOutOfBoundsException]{
+      TuringProcessor(unarySub, "11-111=")
+        .process()
+    }
+  }
+
+  test("Test OK - ;;") {
+    TuringProcessor(unarySub, "111-11=;;32309irjfdslkfj")
+      .process()
+  }
+
+  test("Empty Tape - 1") {
+    assertThrows[IllegalArgumentException]{
+      TuringProcessor(unarySub, "")
+        .process()
+    }
+  }
+
+  test("Empty Tape - 2") {
+    assertThrows[IllegalArgumentException]{
+      TuringProcessor(unarySub, ";;11-11=")
+        .process()
     }
   }
 }
