@@ -1,0 +1,51 @@
+{
+  "name" : "palindrome",
+  "alphabet": [ "y", "n", "a", "b", "."],
+  "blank" : ".",
+  "states" : [ "first_char", "to_start", "check_done", "eraseall", "HALT",
+    "end_a", "rep_a",
+    "end_b", "rep_b"
+  ],
+  "initial" : "first_char",
+  "finals" : [ "HALT" ],
+  "transitions" : {
+    "first_char": [
+      { "read" : "a", "to_state": "end_a", "write": ".", "action": "RIGHT"},
+      { "read" : "b", "to_state": "end_b", "write": ".", "action": "RIGHT"},
+      { "read" : ".", "to_state": "HALT" , "write": ".", "action": "RIGHT"}
+    ],
+    "to_start": [
+      { "read" : ".", "to_state": "first_char","write": ".", "action": "RIGHT"},
+      { "read" : "a", "to_state": "to_start",  "write": "a", "action": "LEFT"},
+      { "read" : "b", "to_state": "to_start",  "write": "b", "action": "LEFT"}
+    ],
+    "check_done": [
+      { "read" : ".", "to_state": "HALT",     "write": "y", "action": "RIGHT"},
+      { "read" : "a", "to_state": "to_start", "write": "a", "action": "LEFT"},
+      { "read" : "b", "to_state": "to_start", "write": "b", "action": "LEFT"}
+    ],
+    "eraseall": [
+      { "read" : "a", "to_state": "eraseall", "write": ".", "action": "LEFT"},
+      { "read" : "b", "to_state": "eraseall", "write": ".", "action": "LEFT"},
+      { "read" : ".", "to_state": "HALT",     "write": ".", "action": "RIGHT"}
+    ],
+    "end_a": [
+      { "read" : ".", "to_state": "rep_a",  "write": ".", "action": "LEFT"},
+      { "read" : "a", "to_state": "end_a",  "write": "a", "action": "RIGHT"},
+      { "read" : "b", "to_state": "end_a" , "write": "b", "action": "RIGHT"}
+    ],
+    "rep_a": [
+      { "read" : "a", "to_state": "check_done", "write": ".", "action": "LEFT"},
+      { "read" : "b", "to_state": "eraseall",   "write": "n", "action": "LEFT"}
+    ],
+    "end_b": [
+      { "read" : ".", "to_state": "rep_b",  "write": ".", "action": "LEFT"},
+      { "read" : "a", "to_state": "end_b",  "write": "a", "action": "RIGHT"},
+      { "read" : "b", "to_state": "end_b" , "write": "b", "action": "RIGHT"}
+    ],
+    "rep_b": [
+      { "read" : "b", "to_state": "check_done", "write": ".", "action": "LEFT"},
+      { "read" : "a", "to_state": "eraseall",   "write": "n", "action": "LEFT"}
+    ]
+  }
+}
