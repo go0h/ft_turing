@@ -20,6 +20,8 @@ class Tape(in: String) {
     shift(transition.action.get)
   }
 
+  def getResult: String = tape.mkString("").replaceAll("[.]+$", "")
+
   private def createTapeFromInput: Array[String] = {
 
     val shortedIn = if (in.contains(";;")) in.substring(0, in.indexOf(";;")) else in
@@ -49,9 +51,7 @@ class Tape(in: String) {
 
 object Tape {
 
-  def apply(input: String): Tape = {
-    new Tape(input)
-  }
+  def apply(input: String): Tape = new Tape(input)
 
   implicit def toCourse(inputString: String): Tape = Tape(inputString)
 }

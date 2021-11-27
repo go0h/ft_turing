@@ -44,20 +44,20 @@ class TuringProcessorTest extends AnyFunSuite {
 
   test("Out of bounds - 30") {
     assertThrows[IndexOutOfBoundsException]{
-      TuringProcessor(unarySub, "11-11")
+      TuringProcessor(unarySub, "11-11", verbose = false)
         .process()
     }
   }
 
   test("Out of bounds - 31") {
     assertThrows[IndexOutOfBoundsException]{
-      TuringProcessor(unarySub, "11-111=")
+      TuringProcessor(unarySub, "11-111=", verbose = false)
         .process()
     }
   }
 
   test("Test OK - ;;") {
-    TuringProcessor(unarySub, "111-11=;;32309irjfdslkfj")
+    TuringProcessor(unarySub, "111-11=;;32309irjfdslkfj", verbose = false)
       .process()
   }
 

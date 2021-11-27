@@ -3,7 +3,7 @@ package ru.school21.turing.processor
 import scala.annotation.tailrec
 import ru.school21.turing.descriptions.{Description, Transition}
 
-class TuringProcessor(description: Description, tape: Tape) {
+class TuringProcessor(description: Description, tape: Tape, verbose: Boolean = true) {
 
   if ((tape.tape.toSet -- description.alphabet.get).nonEmpty) {
     throw new IllegalArgumentException(
@@ -12,15 +12,18 @@ class TuringProcessor(description: Description, tape: Tape) {
     )
   }
 
-  def process(): Unit = {
+  def process(): String = {
     process(description.getTransition(description.initial, tape.cur), description.initial)
+    tape.getResult
   }
 
   @tailrec
   private def process(transition: Transition, transitionName: Option[String]): Unit = {
-    println(s"$tape ${transition.getTransitionString(transitionName)}")
+    if (verbose) {
+      println(s"$tape ${transition.getTransitionString(transitionName)}")
+    }
+    tape.apply(transition)
     if (!description.isFinals(transition.toState)) {
-      tape.apply(transition)
       process(description.getTransition(transition.toState, tape.cur), transition.toState)
     }
   }
@@ -28,7 +31,7 @@ class TuringProcessor(description: Description, tape: Tape) {
 
 object TuringProcessor {
 
-  def apply(description: Description, input: Tape): TuringProcessor = {
-    new TuringProcessor(description, input)
+  def apply(description: Description, input: Tape, verbose: Boolean = true): TuringProcessor = {
+    new TuringProcessor(description, input, verbose)
   }
 }
