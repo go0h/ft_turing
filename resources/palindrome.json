@@ -36,7 +36,8 @@
     ],
     "rep_a": [
       { "read" : "a", "to_state": "check_done", "write": ".", "action": "LEFT"},
-      { "read" : "b", "to_state": "eraseall",   "write": "n", "action": "LEFT"}
+      { "read" : "b", "to_state": "eraseall",   "write": "n", "action": "LEFT"},
+      { "read" : ".", "to_state": "HALT",       "write": "y", "action": "RIGHT"}
     ],
     "end_b": [
       { "read" : ".", "to_state": "rep_b",  "write": ".", "action": "LEFT"},
@@ -45,7 +46,8 @@
     ],
     "rep_b": [
       { "read" : "b", "to_state": "check_done", "write": ".", "action": "LEFT"},
-      { "read" : "a", "to_state": "eraseall",   "write": "n", "action": "LEFT"}
+      { "read" : "a", "to_state": "eraseall",   "write": "n", "action": "LEFT"},
+      { "read" : ".", "to_state": "HALT",       "write": "y", "action": "RIGHT"}
     ]
   }
 }

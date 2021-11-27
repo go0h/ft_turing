@@ -40,15 +40,42 @@ class PalindromeTest extends AnyFunSuite {
   }
 
   test("Bad Even Palindrome - aaaaaaaaaaabaaaaaa") {
-    assert(getResult("aaaaaaaaaaabaaaaaa").last == 'n')
+    assert(getResult("aaaaaaaaaaabaaaaaa") == "n")
   }
 
   test("Bad Even Palindrome - aaaa") {
-    assert(getResult("aaab").last == 'n')
+    assert(getResult("aaab") == "n")
   }
 
   test("Bad Even Palindrome - abbaabaaabba") {
-    assert(getResult("abbaabaaabba").last == 'n')
+    assert(getResult("abbaabaaabba") == "n")
   }
 
+  test("Correct Odd Palindrome - a") {
+    assert(getResult("a") == "y")
+  }
+
+  test("Correct Odd Palindrome - aaa") {
+    assert(getResult("aaa") == "y")
+  }
+
+  test("Correct Odd Palindrome - aba") {
+    assert(getResult("aba") == "y")
+  }
+
+  test("Correct Odd Palindrome - abbabba") {
+    assert(getResult("abbabba") == "y")
+  }
+
+  test("Correct Odd Palindrome - abbbbbbaabaabbbbbba") {
+    assert(getResult("abbbbbbaabaabbbbbba") == "y")
+  }
+
+  test("Bad Odd Palindrome - abbbbbbaabbabbbbbba") {
+    assert(getResult("abbbbbbaabbabbbbbba") == "n")
+  }
+
+  test("Bad Odd Palindrome - aaabbaa") {
+    assert(getResult("aaabbaa") == "n")
+  }
 }
