@@ -1,0 +1,46 @@
+{
+  "name" : "language_n",
+  "alphabet": [ "y", "n", "0", "1", "." ],
+  "blank" : ".",
+  "states" : [ "skip_blanks", "check_zero", "find_one", "back_one", "find_zero",
+    "erase_all_right", "erase_all_left", "HALT"],
+  "initial" : "skip_blanks",
+  "finals" : [ "HALT" ],
+  "transitions" : {
+    "skip_blanks": [
+      { "read" : ".", "to_state": "skip_blanks",     "write": ".", "action": "RIGHT"},
+      { "read" : "0", "to_state": "find_one",        "write": ".", "action": "RIGHT"},
+      { "read" : "1", "to_state": "erase_all_right", "write": ".", "action": "RIGHT"}
+    ],
+    "check_zero": [
+      { "read" : "0", "to_state": "find_one",        "write": ".", "action": "RIGHT"},
+      { "read" : "1", "to_state": "erase_all_right", "write": ".", "action": "RIGHT"},
+      { "read" : ".", "to_state": "HALT",            "write": "y", "action": "RIGHT"}
+    ],
+    "find_one": [
+      { "read" : ".", "to_state": "back_one", "write": ".", "action": "LEFT"},
+      { "read" : "0", "to_state": "find_one", "write": "0", "action": "RIGHT"},
+      { "read" : "1", "to_state": "find_one", "write": "1", "action": "RIGHT"}
+    ],
+    "back_one": [
+      { "read" : ".", "to_state": "erase_all_right", "write": ".", "action": "RIGHT"},
+      { "read" : "1", "to_state": "find_zero",       "write": ".", "action": "LEFT"},
+      { "read" : "0", "to_state": "erase_all_left",  "write": "n", "action": "LEFT"}
+    ],
+    "find_zero": [
+      { "read" : ".", "to_state": "check_zero", "write": ".", "action": "RIGHT"},
+      { "read" : "0", "to_state": "find_zero",  "write": "0", "action": "LEFT"},
+      { "read" : "1", "to_state": "find_zero",  "write": "1", "action": "LEFT"}
+    ],
+    "erase_all_right": [
+      { "read" : "0", "to_state": "erase_all_right", "write": ".", "action": "RIGHT"},
+      { "read" : "1", "to_state": "erase_all_right", "write": ".", "action": "RIGHT"},
+      { "read" : ".", "to_state": "HALT",            "write": "n", "action": "RIGHT"}
+    ],
+    "erase_all_left": [
+      { "read" : "0", "to_state": "erase_all_left", "write": ".", "action": "LEFT"},
+      { "read" : "1", "to_state": "erase_all_left", "write": ".", "action": "LEFT"},
+      { "read" : ".", "to_state": "HALT",           "write": ".", "action": "RIGHT"}
+    ]
+  }
+}

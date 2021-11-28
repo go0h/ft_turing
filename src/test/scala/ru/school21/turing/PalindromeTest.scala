@@ -7,10 +7,10 @@ import ru.school21.turing.processor.TuringProcessorTest.getParsedDescription
 
 class PalindromeTest extends AnyFunSuite {
 
-  val unarySub: Description = getParsedDescription("resources/palindrome.json")
+  val palindrome: Description = getParsedDescription("resources/palindrome.json")
 
   def getResult(input: String): String = {
-    TuringProcessor(unarySub, input, verbose = false)
+    TuringProcessor(palindrome, input, verbose = false)
       .process()
       .replaceAll("^[.]++", "")
   }
