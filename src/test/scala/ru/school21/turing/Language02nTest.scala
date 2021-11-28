@@ -35,8 +35,16 @@ class Language02nTest extends AnyFunSuite {
     assert(getResult("00000000") == "y")
   }
 
+  test("Correct Language 02n - 00000000000000000000000000000000") {
+    assert(getResult("00000000000000000000000000000000") == "y")
+  }
+
   test("Correct Language 02n - 000.0000") {
     assert(getResult("000.0000") == "n0000")
+  }
+
+  test("Bad Language 02n - 000000000000000000000000000000000") {
+    assert(getResult("000000000000000000000000000000000") == "n")
   }
 
 }
