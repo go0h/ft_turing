@@ -5,57 +5,57 @@ import ru.school21.turing.descriptions.Description
 import ru.school21.turing.processor.TuringProcessor
 import ru.school21.turing.processor.TuringProcessorTest.getParsedDescription
 
-class LanguageNTest extends AnyFunSuite {
+class Language0n1nTest extends AnyFunSuite {
 
-  val languageN: Description = getParsedDescription("resources/language_n.json")
+  val language0n1n: Description = getParsedDescription("resources/language_0n1n.json")
 
   def getResult(input: String): String = {
-    TuringProcessor(languageN, input, verbose = false)
+    TuringProcessor(language0n1n, input, verbose = false)
       .process()
       .replaceAll("^[.]++", "")
   }
 
-  test("Correct Language N - 01") {
+  test("Correct Language 0n1n - 01") {
     assert(getResult("01") == "y")
   }
 
-  test("Correct Language N - 0011") {
+  test("Correct Language 0n1n - 0011") {
     assert(getResult("0011") == "y")
   }
 
-  test("Correct Language N - 00001111") {
+  test("Correct Language 0n1n - 00001111") {
     assert(getResult("00001111") == "y")
   }
 
-  test("Correct Language N - 00000001111111") {
+  test("Correct Language 0n1n - 00000001111111") {
     assert(getResult("00000001111111") == "y")
   }
 
-  test("Correct Language N - .01") {
+  test("Correct Language 0n1n - .01") {
     assert(getResult(".01") == "y")
   }
 
-  test("Correct Language N - .....00001111") {
+  test("Correct Language 0n1n - .....00001111") {
     assert(getResult(".....00001111") == "y")
   }
 
-  test("Bad Language N - 0000001111111") {
+  test("Bad Language 0n1n - 0000001111111") {
     assert(getResult("0000001111111") == "n")
   }
 
-  test("Bad Language N - 1111111") {
+  test("Bad Language 0n1n - 1111111") {
     assert(getResult("1111111") == "n")
   }
 
-  test("Bad Language N - 110011") {
+  test("Bad Language 0n1n - 110011") {
     assert(getResult("110011") == "n")
   }
 
-  test("Bad Language N - 00101") {
+  test("Bad Language 0n1n - 00101") {
     assert(getResult("00101") == "n")
   }
 
-  test("Bad Language N - 0000.011011") {
+  test("Bad Language 0n1n - 0000.011011") {
     assert(getResult("0000.011011") == "n.011011")
   }
 }

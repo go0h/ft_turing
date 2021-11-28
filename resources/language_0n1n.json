@@ -1,5 +1,5 @@
 {
-  "name" : "language_n",
+  "name" : "language_0n1n",
   "alphabet": [ "y", "n", "0", "1", "." ],
   "blank" : ".",
   "states" : [ "skip_blanks", "check_zero", "find_one", "back_one", "find_zero",
