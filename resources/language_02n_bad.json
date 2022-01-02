@@ -1,0 +1,32 @@
+{
+  "name" : "language_02n",
+  "alphabet": [ "y", "n", "0", "." ],
+  "blank" : ".",
+  "states" : [ "skip_blanks", "check_odd", "check_even", "yes", "no", "HALT"],
+  "initial" : "skip_blanks",
+  "finals" : [ "HALT" ],
+  "transitions" : {
+    "skip_blanks": [
+      { "read" : ".", "to_state": "skip_blanks", "write": ".", "action": "RIGHT"},
+      { "read" : "0", "to_state": "check_odd",   "write": ".", "action": "RIGHT"}
+    ],
+    "check_odd": [
+      { "read" : ".", "to_state": "HALT",       "write": "n", "action": "RIGHT"},
+      { "read" : "0", "to_state": "check_even", "write": ".", "action": "RIGHT"}
+    ],
+    "check_even": [
+      { "read" : ".", "to_state": "HALT",      "write": "y", "action": "RIGHT"},
+      { "read" : "0", "to_state": "check_odd", "write": ".", "action": "RIGHT"}
+    ]
+  },
+  "yes": [
+    { "read" : "*", "to_state": "yes",  "write": "*", "action": "RIGHT" },
+    { "read" : "0", "to_state": "yes",  "write": "0", "action": "RIGHT" },
+    { "read" : ".", "to_state": "HALT", "write": "y", "action": "RIGHT" }
+  ],
+  "no": [
+    { "read" : "*", "to_state": "no",   "write": "*", "action": "RIGHT" },
+    { "read" : "0", "to_state": "no",   "write": "0", "action": "RIGHT" },
+    { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+  ]
+}

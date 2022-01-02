@@ -91,8 +91,8 @@ case class Description(
 
   def getTransition(name: Option[String], read: String): Transition = {
     getTransitions(name)
-      .filter(_.read.get.equals(read))
-      .head
+      .find(_.read.get.equals(read))
+      .getOrElse(throw new TuringLogicException(s"The machine is stacked on symbol '$read'"))
   }
 
   def isFinals(transitionName: Option[String]): Boolean = {

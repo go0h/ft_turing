@@ -1,22 +1,65 @@
 {
-  "name" : "language_02n",
-  "alphabet": [ "y", "n", "0", "." ],
+  "name" : "0^2n",
+  "alphabet" : [ "0", "*", "y", "n", "|", "." ],
   "blank" : ".",
-  "states" : [ "skip_blanks", "check_odd", "check_even", "HALT"],
-  "initial" : "skip_blanks",
+  "states" : [
+    "start_pos", "end_pos",
+    "end_yes", "end_no",
+    "odd", "even",
+    "odd_a", "even_a",
+    "to_start",
+    "yes", "no",
+    "HALT" ],
+  "initial" : "start_pos",
   "finals" : [ "HALT" ],
   "transitions" : {
-    "skip_blanks": [
-      { "read" : ".", "to_state": "skip_blanks", "write": ".", "action": "RIGHT"},
-      { "read" : "0", "to_state": "check_odd",   "write": ".", "action": "RIGHT"}
+    "start_pos": [
+      { "read" : "0", "to_state": "odd", "write": "|", "action": "RIGHT" }
     ],
-    "check_odd": [
-      { "read" : ".", "to_state": "HALT",       "write": "n", "action": "RIGHT"},
-      { "read" : "0", "to_state": "check_even", "write": ".", "action": "RIGHT"}
+    "end_pos": [
+      { "read" : "0", "to_state": "to_start", "write": "0", "action": "LEFT" }
     ],
-    "check_even": [
-      { "read" : ".", "to_state": "HALT",      "write": "y", "action": "RIGHT"},
-      { "read" : "0", "to_state": "check_odd", "write": ".", "action": "RIGHT"}
+    "even": [
+      { "read" : "0", "to_state": "odd", "write": "*", "action": "RIGHT" },
+      { "read" : ".", "to_state": "end_pos", "write": ".", "action": "LEFT" }
+    ],
+    "odd": [
+      { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT" },
+      { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ],
+
+    "to_start": [
+      { "read" : "0", "to_state": "to_start", "write": "0", "action": "LEFT" },
+      { "read" : "*", "to_state": "to_start", "write": "*", "action": "LEFT" },
+      { "read" : "|", "to_state": "HALT",     "write": "|", "action": "RIGHT" }
+    ],
+
+
+    "odd_star": [
+      { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT" },
+      { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ],
+    "odd_zero": [
+      { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT" },
+      { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ],
+    "even_star": [
+      { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT" },
+      { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ],
+    "odd_zero1": [
+      { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT" },
+      { "read" : ".", "to_state": "HALT", "write": "n", "action": "RIGHT" }
+    ],
+
+
+
+
+    "end_no": [
+      { "read" : ".", "to_state": "HALT", "write": "y", "action": "LEFT" }
+    ],
+    "end_yes": [
+      { "read" : ".", "to_state": "HALT", "write": "y", "action": "LEFT" }
     ]
   }
 }

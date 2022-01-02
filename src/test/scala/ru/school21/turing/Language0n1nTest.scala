@@ -2,6 +2,7 @@ package ru.school21.turing
 
 import org.scalatest.funsuite.AnyFunSuite
 import ru.school21.turing.descriptions.Description
+import ru.school21.turing.descriptions.exceptions.TuringLogicException
 import ru.school21.turing.processor.TuringProcessor
 import ru.school21.turing.processor.TuringProcessorTest.getParsedDescription
 
@@ -57,5 +58,9 @@ class Language0n1nTest extends AnyFunSuite {
 
   test("Bad Language 0n1n - 0000.011011") {
     assert(getResult("0000.011011") == "n.011011")
+  }
+
+  test("Bad Language 0n1n - 01y") {
+    assertThrows[TuringLogicException](getResult("01y"))
   }
 }
