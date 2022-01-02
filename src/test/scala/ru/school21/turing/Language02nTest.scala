@@ -13,43 +13,48 @@ class Language02nTest extends AnyFunSuite {
   def getResult(input: String): String = {
     TuringProcessor(language0n1n, input, verbose = false)
       .process()
-      .replaceAll("^[.]++", "")
+      .replaceAll("^[0]++", "")
   }
 
-  test("Bad Language 02n - 0") {
-    assert(getResult("0") == "n")
+  def isPowerOfTwo(n: Int): Boolean = (n & (n - 1)) == 0
+
+  test("Bad Language 0^(2n) - 0") {
+    assert(getResult("0") == "y")
   }
 
-  test("Bad Language 02n - .......0") {
-    assert(getResult(".......0") == "n")
+  test("Bad Language 0^(2n) - .......0") {
+    assertThrows[TuringLogicException](getResult(".......0"))
   }
 
-  test("Bad Language 02n - .......00") {
-    assert(getResult(".......00") == "y")
-  }
-
-  test("Correct Language 02n - 00") {
+  test("Correct Language 0^(2n) - 00") {
     assert(getResult("00") == "y")
   }
 
-  test("Correct Language 02n - 00000000") {
+  test("Correct Language 0^(2n) - 00000000") {
     assert(getResult("00000000") == "y")
   }
 
-  test("Correct Language 02n - 00000000000000000000000000000000") {
+  test("Correct Language 0^(2n) - 00000000000000000000000000000000") {
     assert(getResult("00000000000000000000000000000000") == "y")
   }
 
-  test("Correct Language 02n - 000.0000") {
-    assert(getResult("000.0000") == "n0000")
-  }
-
-  test("Bad Language 02n - 000000000000000000000000000000000") {
+  test("Bad Language 0^(2n) - 000000000000000000000000000000000") {
     assert(getResult("000000000000000000000000000000000") == "n")
   }
 
-  test("Bad Language 02n - 00y00") {
-    assertThrows[TuringLogicException](getResult("00y00"))
+  test("Check 0^(2n) from 1 to 4096") {
+    (1 to 4096).foreach{ n =>
+      val str = "0" * n
+      val res = getResult(str)
+      if (isPowerOfTwo(n)) {
+        assert(res == "y", n)
+      } else {
+        assert(res == "n", n)
+      }
+    }
   }
 
+  test("Bad Language 0^(2n) - 00y00") {
+    assertThrows[TuringLogicException](getResult("00y00"))
+  }
 }
