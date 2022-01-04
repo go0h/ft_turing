@@ -75,13 +75,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check blank") {
 
     val description = Description(
-      name = Option("unary_sub"),
-      alphabet = Option(List("blank", "init")),
-      blank = Option("blnk"),
-      states = Option(List("final", "int1")),
-      initial = Option("int"),
-      finals = Option(List("final")),
-      transitions = Option(Map())
+      name = "unary_sub",
+      alphabet = List("blank", "init"),
+      blank = "blnk",
+      states = List("final", "int1"),
+      initial = "int",
+      finals = List("final"),
+      transitions = Map[String, List[Transition]]()
     )
 
     assertThrows[TuringLogicException](
@@ -92,13 +92,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check initial") {
 
     val description = Description(
-      name = Option("unary_sub"),
-      alphabet = Option(List("blank", "init")),
-      blank = Option("blank"),
-      states = Option(List("final", "int1")),
-      initial = Option("int"),
-      finals = Option(List("final")),
-      transitions = Option(Map())
+      name = "unary_sub",
+      alphabet = List("blank", "init"),
+      blank = "blank",
+      states = List("final", "int1"),
+      initial = "int",
+      finals = List("final"),
+      transitions = Map[String, List[Transition]]()
     )
 
     assertThrows[TuringLogicException](
@@ -109,13 +109,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check finals") {
 
     val description = Description(
-      name = Option("unary_sub"),
-      alphabet = Option(List("blank", "init")),
-      blank = Option("blank"),
-      states = Option(List("final1", "int1")),
-      initial = Option("int"),
-      finals = Option(List("final")),
-      transitions = Option(Map())
+      name = "unary_sub",
+      alphabet = List("blank", "init"),
+      blank = "blank",
+      states = List("final1", "int1"),
+      initial = "int",
+      finals = List("final"),
+      transitions = Map[String, List[Transition]]()
     )
 
     assertThrows[TuringLogicException](
@@ -126,13 +126,13 @@ class DescriptionTest extends AnyFunSuite {
   test("Check READ and WRITE states") {
 
     val description = Description(
-      name = Option("unary_sub"),
-      alphabet = Option(List("blank", "init")),
-      blank = Option("blank"),
-      states = Option(List("final1", "int1")),
-      initial = Option("int"),
-      finals = Option(List("final")),
-      transitions = Option(Map())
+      name = "unary_sub",
+      alphabet = List("blank", "init"),
+      blank = "blank",
+      states = List("final1", "int1"),
+      initial = "int",
+      finals = List("final"),
+      transitions = Map[String, List[Transition]]()
     )
 
     assertThrows[TuringLogicException](

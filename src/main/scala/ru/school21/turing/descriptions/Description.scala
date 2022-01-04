@@ -1,8 +1,12 @@
 package ru.school21.turing.descriptions
 
+import org.json4s.jackson.JsonMethods.parse
+import org.json4s.{DefaultFormats, Formats}
 import ru.school21.turing.descriptions.exceptions._
 
-case class Description(
+import scala.util.{Try, Using}
+
+final case class Description(
                         name: Option[String],
                         alphabet: Option[List[String]],
                         blank: Option[String],
@@ -114,5 +118,42 @@ case class Description(
        |${transitions.get.flatMap(x => x._2.map(_.getTransitionString(Option(x._1)))).mkString("\n")}
        |${"*" * 80}"""
       .stripMargin
+  }
+}
+
+object Description {
+
+  def apply(name: String,
+            alphabet: List[String],
+            blank: String,
+            states: List[String],
+            initial: String,
+            finals: List[String],
+            transitions: Map[String, List[Transition]]): Description = {
+
+    new Description(
+      Option(name),
+      Option(alphabet),
+      Option(blank),
+      Option(states),
+      Option(initial),
+      Option(finals),
+      Option(transitions)
+    )
+  }
+
+  def readDescription(filename: String): Description = {
+
+    val json: Try[String] = Using(io.Source.fromFile(filename)) {
+      reader => reader.getLines().reduce(_ + _)
+    }
+    val jsonString = json.get
+
+    implicit val formats: Formats = DefaultFormats
+
+    parse(jsonString)
+      .transformField(transformFields)
+      .extract[Description]
+      .validate()
   }
 }

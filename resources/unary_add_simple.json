@@ -1,0 +1,22 @@
+{
+  "name" : "unary_add_simple",
+  "alphabet": [ "1", ".", "+" ],
+  "blank" : ".",
+  "states" : [ "s", "w", "a", "H" ],
+  "initial" : "s",
+  "finals" : [ "H" ],
+  "transitions" : {
+    "s": [
+      { "read" : "1", "to_state": "s", "write": "1", "action": "RIGHT"},
+      { "read" : "+", "to_state": "a", "write": ".", "action": "RIGHT"},
+      { "read" : ".", "to_state": "H", "write": ".", "action": "LEFT"}
+    ],
+    "a": [
+      { "read" : "1", "to_state": "w", "write": "+", "action": "LEFT" },
+      { "read" : ".", "to_state": "H", "write": ".", "action": "LEFT" }
+    ],
+    "w": [
+      { "read" : ".", "to_state": "s", "write": "1", "action": "RIGHT" }
+    ]
+  }
+}

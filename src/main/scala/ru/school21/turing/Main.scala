@@ -1,10 +1,7 @@
 package ru.school21.turing
 
-import scala.util.{Try, Using}
 import scopt.OParser
-import org.json4s._
-import org.json4s.jackson.JsonMethods._
-import ru.school21.turing.descriptions.{Description, transformFields}
+import ru.school21.turing.descriptions.Description
 import ru.school21.turing.processor.TuringProcessor
 
 object Main {
@@ -18,21 +15,13 @@ object Main {
     }
 
     try {
-      val json: Try[String] = Using(io.Source.fromFile(config.description)) {
-        reader => reader.getLines().reduce(_ + _)
-      }
-      val jsonString = json.get
 
-      implicit val formats: Formats = DefaultFormats
-
-      val description = parse(jsonString)
-        .transformField(transformFields)
-        .extract[Description]
-        .validate()
-
+      val description = Description.readDescription(config.description)
       println(description)
+
       val res = TuringProcessor(description, config.input)
         .process()
+
       println(res)
     } catch {
       case e: Exception => println(e.getMessage)
