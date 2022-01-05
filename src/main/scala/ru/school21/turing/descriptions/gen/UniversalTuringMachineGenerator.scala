@@ -45,6 +45,13 @@ object UniversalTuringMachineGenerator {
     .sorted
     .toList
 
+  def createAndSaveUniversalDescriptions(description: Description): Unit = {
+    val name = s"utm_${description.name.get.replaceAll(" ", "_")}.json"
+    val utm = createUniversalDescription(description)
+    saveDescriptionToFile(utm, name)
+    printUsageForDescription(createSimplifiedDescription(description), name)
+  }
+
   /**
     * @return Simplified description.
     *         All transitions renamed to one char string from INSTRUCTIONS_NAMES.
@@ -85,18 +92,17 @@ object UniversalTuringMachineGenerator {
   }
 
   /** Return short description for run Universal Turing Machine */
-  def generateString(description: Description): String = {
+  def generateShorDescription(description: Description): String = {
 
     val transitions = description.transitions.get.map { state =>
-      state._1 + "[" + state._2.map(t => s"{${t.shortNotation}}").mkString + "]"
+      state._1 + ST_BR_L + state._2.map(t => s"{${t.shortNotation}}").mkString + ST_BR_R
     }.mkString
 
     description.initial.get + START + transitions
   }
 
-  def main(args: Array[String]): Unit = {
+  def createUniversalDescription(descriptionFull: Description): Description = {
 
-    val descriptionFull = Description.readDescription(args(0))
     val description     = createSimplifiedDescription(descriptionFull)
 
     val name     = NAME + ": " + description.name.get
@@ -197,7 +203,7 @@ object UniversalTuringMachineGenerator {
             }
         }
 
-    val res = Description(
+    Description(
       name        = name,
       alphabet    = alphabet,
       blank       = "_",
@@ -206,15 +212,25 @@ object UniversalTuringMachineGenerator {
       finals      = List("HALT"),
       transitions = transitions.toMap
     )
+  }
 
-    val filename = s"utm_${description.name.get.replaceAll(" ", "_")}.json"
-    Using(new PrintWriter(filename))(_.write(res.toJSON))
+  def saveDescriptionToFile(description: Description, filename: String = ""): String = {
 
+    val name =
+      if (filename.nonEmpty) filename
+      else s"utm_${description.name.get.replaceAll(" ", "_")}.json"
+
+    Using(new PrintWriter(name))(_.write(description.toJSON))
+
+    name
+  }
+
+  def printUsageForDescription(description: Description, name: String): Unit = {
     println(
       s"""
-         |Created Universal Turing Machine - $filename
+         |Created Universal Turing Machine - $name
          |Usage:
-         |java -jar ft_turing.jar $filename '${generateString(description)}${SEP}input'""".stripMargin
+         |java -jar ft_turing.jar $name '${generateShorDescription(description)}${SEP}input'""".stripMargin
     )
   }
 }

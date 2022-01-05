@@ -7,6 +7,7 @@ package object turing {
   case class Config(
                      description: String = "",
                      input: String = "",
+                     gen: Boolean = false,
                      verbose: Boolean = false,
                      debug: Boolean = false)
 
@@ -24,8 +25,10 @@ package object turing {
         .action((x, c) => c.copy(input = x))
         .text("input of the machine"),
       help('h', "help")
-        .text("show this help message and exit")
+        .text("show this help message and exit"),
+      cmd("gen")
+        .action((_, c) => c.copy(gen = true))
+        .text("Generate Universal Turing Machine for input jsonFile")
     )
   }
-
 }

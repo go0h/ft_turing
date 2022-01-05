@@ -2,6 +2,7 @@ package ru.school21.turing
 
 import scopt.OParser
 import ru.school21.turing.descriptions.Description
+import ru.school21.turing.descriptions.gen.UniversalTuringMachineGenerator.createAndSaveUniversalDescriptions
 import ru.school21.turing.processor.TuringProcessor
 
 object Main {
@@ -17,12 +18,15 @@ object Main {
     try {
 
       val description = Description.readDescription(config.description)
-      println(description)
 
-      val res = TuringProcessor(description, config.input)
-        .process()
+      if (config.gen) {
+        createAndSaveUniversalDescriptions(description)
+      } else {
+        val res = TuringProcessor(description, config.input)
+          .process()
+        println(res)
+      }
 
-      println(res)
     } catch {
       case e: Exception => println(e.getMessage)
     }

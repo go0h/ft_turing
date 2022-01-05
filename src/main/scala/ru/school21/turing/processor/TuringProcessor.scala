@@ -13,6 +13,9 @@ class TuringProcessor(description: Description, tape: Tape, verbose: Boolean = t
   }
 
   def process(): String = {
+
+    if (verbose) println(description)
+
     process(description.getTransition(description.initial, tape.cur), description.initial)
     tape.getResult
   }
