@@ -63,6 +63,8 @@ object UniversalTuringMachineGenerator {
     */
   def createSimplifiedDescription(description: Description): Description = {
 
+    //TODO create intersection between INSTRUCTIONS_NAMES and INPUT from description
+    // rename transitions names
     val states = description.states.get.filter(_ != description.finals.get.head)
 
     val allowedInstructions = INSTRUCTIONS_NAMES
@@ -76,7 +78,7 @@ object UniversalTuringMachineGenerator {
       )
     if (description.finals.get.length > 1)
       throw new IllegalArgumentException(
-        s"In description ${description.name.get} more than '1' finals states. I can't simplified it."
+        s"In description ${description.name.get} more than 1 finals states. I can't simplified it."
       )
 
     val mapping: Map[String, String] = (states.zip(INSTRUCTIONS_NAMES) :+ (description.finals.get.head, "H")).toMap
@@ -103,7 +105,7 @@ object UniversalTuringMachineGenerator {
   def generateShortDescription(description: Description): String = {
 
     val transitions = description.transitions.get.map { state =>
-      state._1 + ST_BR_L + state._2.map(t => s"{${t.shortNotation}}").mkString + ST_BR_R
+      state._1 + ST_BR_L + state._2.map(t => s"$TR_BR_L${t.shortNotation}$TR_BR_R").mkString + ST_BR_R
     }.mkString
 
     description.initial.get + START + transitions
@@ -162,16 +164,16 @@ object UniversalTuringMachineGenerator {
           val (state, in) = x
           s"check_op_$state-($in)" ->
             alphabet.map { a =>
-              if (a != "[") Transition(a, s"find_state_$state($in)", a, "RIGHT")
-              else Transition("[", s"cmp_read_$state($in)", "[", "RIGHT")
+              if (a != ST_BR_L) Transition(a, s"find_state_$state($in)", a, "RIGHT")
+              else Transition(ST_BR_L, s"cmp_read_$state($in)", ST_BR_L, "RIGHT")
             }
         } ++
         prodStIn.map { x =>
           val (state, in) = x
           s"cmp_read_$state($in)" ->
-            alphabet.filter(_ != "]").map { a =>
+            alphabet.filter(_ != ST_BR_R).map { a =>
               if (a == in) Transition(in, s"get_state_$in", in, "RIGHT")
-              else if (a == "{") Transition("{", s"cmp_read_$state($in)", "{", "RIGHT")
+              else if (a == TR_BR_L) Transition(TR_BR_L, s"cmp_read_$state($in)", TR_BR_L, "RIGHT")
               else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
             }
         } ++
@@ -197,8 +199,8 @@ object UniversalTuringMachineGenerator {
         prodStIn.map { x =>
           val (state, in) = x
           s"to_next_trans_$state($in)" ->
-            alphabet.filter(_ != "]").map { a =>
-              if (a == "}") Transition("}", s"cmp_read_$state($in)", "}", "RIGHT")
+            alphabet.filter(_ != ST_BR_R).map { a =>
+              if (a == TR_BR_R) Transition(TR_BR_R, s"cmp_read_$state($in)", TR_BR_R, "RIGHT")
               else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
             }
         } ++

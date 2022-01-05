@@ -16,12 +16,12 @@ object Main {
     }
 
     try {
-
       val description = Description.readDescription(config.description)
 
       if (config.gen) {
         createAndSaveUniversalDescriptions(description)
       } else {
+        //TODO add read from STDIN
         val res = TuringProcessor(description, config.input)
           .process()
         println(res)
