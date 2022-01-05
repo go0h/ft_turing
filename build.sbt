@@ -15,6 +15,8 @@ assemblyMergeStrategy := {
   case x => MergeStrategy.defaultMergeStrategy(x)
 }
 
+scalafmtOnCompile := true
+
 lazy val common = (project in file(".")).
   settings(
     assembly / logLevel := Level.Warn,

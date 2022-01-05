@@ -1,6 +1,7 @@
 package ru.school21.turing.processor
 
 import ru.school21.turing.descriptions.Transition
+import ru.school21.turing.processor.Tape.{RED, RESET}
 
 import scala.language.implicitConversions
 
@@ -45,11 +46,14 @@ class Tape(in: String) {
   }
 
   override def toString: String = {
-    "[" + tape.take(pos).mkString("") + "<" + tape(pos) + ">" + tape.slice(pos + 1, tape.length).mkString("") + "]"
+    "[" + tape.take(pos).mkString("") + RED + tape(pos) + RESET + tape.slice(pos + 1, tape.length).mkString("") + "]"
   }
 }
 
 object Tape {
+
+  val RESET = "\u001B[0m"
+  val RED = "\u001B[41m"
 
   def apply(input: String): Tape = new Tape(input)
 

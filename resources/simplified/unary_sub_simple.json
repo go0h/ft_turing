@@ -1,0 +1,28 @@
+{
+  "name" : "unary_sub_simple",
+  "alphabet": [ "1", ".", "-", "=" ],
+  "blank" : ".",
+  "states" : [ "s", "e", "m", "p", "H" ],
+  "initial" : "s",
+  "finals" : [ "H" ],
+  "transitions" : {
+    "s": [
+      { "read" : ".", "to_state": "s", "write": ".", "action": "RIGHT"},
+      { "read" : "1", "to_state": "s", "write": "1", "action": "RIGHT"},
+      { "read" : "-", "to_state": "s", "write": "-", "action": "RIGHT"},
+      { "read" : "=", "to_state": "e" ,"write": ".", "action": "LEFT" }
+    ],
+    "e": [
+      { "read" : "1", "to_state": "m", "write": "=", "action": "LEFT"},
+      { "read" : "-", "to_state": "H" ,"write": ".", "action": "LEFT"}
+    ],
+    "m": [
+      { "read" : "1", "to_state": "m", "write": "1", "action": "LEFT"},
+      { "read" : "-", "to_state": "p", "write": "-", "action": "LEFT"}
+    ],
+    "p": [
+      { "read" : ".", "to_state": "p", "write": ".", "action": "LEFT"},
+      { "read" : "1", "to_state": "s", "write": ".", "action": "RIGHT"}
+    ]
+  }
+}

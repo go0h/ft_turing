@@ -7,14 +7,14 @@ import ru.school21.turing.descriptions.exceptions._
 import scala.util.{Try, Using}
 
 final case class Description(
-                        name: Option[String],
-                        alphabet: Option[List[String]],
-                        blank: Option[String],
-                        states: Option[List[String]],
-                        initial: Option[String],
-                        finals: Option[List[String]],
-                        transitions: Option[Map[String, List[Transition]]]
-                      ) extends JsonStruct {
+  name: Option[String],
+  alphabet: Option[List[String]],
+  blank: Option[String],
+  states: Option[List[String]],
+  initial: Option[String],
+  finals: Option[List[String]],
+  transitions: Option[Map[String, List[Transition]]]
+) extends JsonStruct {
 
   def validate(): Description = {
     checkEmptyFields()
@@ -27,7 +27,7 @@ final case class Description(
 
   def checkBlank(): Unit = {
 
-    val blnk = blank.get
+    val blnk   = blank.get
     val alphbt = alphabet.get
 
     if (!alphbt.contains(blnk))
@@ -52,38 +52,36 @@ final case class Description(
     val fnls = finals.get
     val stts = states.get
 
-    fnls.foreach(finalState => {
+    fnls.foreach { finalState =>
       if (!stts.contains(finalState))
         throw new TuringLogicException(
           s"Final state '$finalState' not in allowed states '${stts.mkString(", ")}'"
         )
-    })
+    }
   }
 
   def checkTransitions(): Unit = {
 
     val alphbt = alphabet.get
-    val stts = states.get
+    val stts   = states.get
     val trnsts = transitions.get
-    val fnls = finals.get
+    val fnls   = finals.get
 
     var hasFinals = false
 
-    trnsts
-      .foreach { field =>
-        if (!stts.contains(field._1))
-          throw new TuringLogicException(
-            s"Transition '${field._1}' not in allowed states '${stts.mkString(", ")}'"
-          )
-        field._2 match {
-          case list: List[_] =>
-            list.foreach {
-              transition: Transition =>
-                transition.checkTransitions(field._1, alphbt, stts)
-                hasFinals = fnls.contains(transition.toState.get) || hasFinals
-            }
-        }
+    trnsts.foreach { field =>
+      if (!stts.contains(field._1))
+        throw new TuringLogicException(
+          s"Transition '${field._1}' not in allowed states '${stts.mkString(", ")}'"
+        )
+      field._2 match {
+        case list: List[_] =>
+          list.foreach { transition: Transition =>
+            transition.checkTransitions(field._1, alphbt, stts)
+            hasFinals = fnls.contains(transition.toState.get) || hasFinals
+          }
       }
+    }
 
     if (!hasFinals)
       throw new TuringLogicException(
@@ -93,15 +91,13 @@ final case class Description(
 
   def getTransitions(name: Option[String]): List[Transition] = transitions.get(name.getOrElse(""))
 
-  def getTransition(name: Option[String], read: String): Transition = {
+  def getTransition(name: Option[String], read: String): Transition =
     getTransitions(name)
       .find(_.read.get.equals(read))
       .getOrElse(throw new TuringLogicException(s"The machine is stacked on symbol '$read'"))
-  }
 
-  def isFinals(transitionName: Option[String]): Boolean = {
+  def isFinals(transitionName: Option[String]): Boolean =
     finals.get.contains(transitionName.getOrElse(""))
-  }
 
   override def toString: String = {
     val width = name.get.length
@@ -116,8 +112,7 @@ final case class Description(
        |Finals:   ${finals.get.mkString("[ ", ", ", " ]")}
        |${"*" * 80}
        |${transitions.get.flatMap(x => x._2.map(_.getTransitionString(Option(x._1)))).mkString("\n")}
-       |${"*" * 80}"""
-      .stripMargin
+       |${"*" * 80}""".stripMargin
   }
 }
 
@@ -129,8 +124,7 @@ object Description {
             states: List[String],
             initial: String,
             finals: List[String],
-            transitions: Map[String, List[Transition]]): Description = {
-
+            transitions: Map[String, List[Transition]]): Description =
     new Description(
       Option(name),
       Option(alphabet),
@@ -140,12 +134,11 @@ object Description {
       Option(finals),
       Option(transitions)
     )
-  }
 
   def readDescription(filename: String): Description = {
 
-    val json: Try[String] = Using(io.Source.fromFile(filename)) {
-      reader => reader.getLines().reduce(_ + _)
+    val json: Try[String] = Using(io.Source.fromFile(filename)) { reader =>
+      reader.getLines().reduce(_ + _)
     }
     val jsonString = json.get
 
