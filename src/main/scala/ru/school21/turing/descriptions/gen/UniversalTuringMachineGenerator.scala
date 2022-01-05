@@ -1,4 +1,4 @@
-package ru.school21.turing.gen
+package ru.school21.turing.descriptions.gen
 
 import ru.school21.turing.descriptions.{Description, Transition}
 
@@ -6,7 +6,7 @@ import java.io.PrintWriter
 import scala.collection.mutable
 import scala.util.Using
 
-object UTM {
+object UniversalTuringMachineGenerator {
 
   /**
     * Original - unary_add_simple.json
@@ -40,19 +40,64 @@ object UTM {
 
   val INIT_STATE = "init"
 
-  /* s!s[{1s1R}{+a.R}{.H.L}]a[{1w+L}{.H.L}]w[{.s1R}] */
+  val INSTRUCTIONS_NAMES: List[String] = "AaBbCcDdEeFfGghIiJjKklMmNnOoPpQqrSsTtUuVvWwXxYyZz"
+    .map(_.toString)
+    .sorted
+    .toList
+
+  /**
+    * @return Simplified description.
+    *         All transitions renamed to one char string from INSTRUCTIONS_NAMES.
+    *         Example for description <b>unary_add</b>:
+    *         transition <b>scanright</b> renamed to <b>A</b>, <b>addone</b> renamed to <b>B</b>, etc.
+    *         Finals transition always renamed to <b>H</b>.
+    */
+  def createSimplifiedDescription(description: Description): Description = {
+
+    val states = description.states.get.filter(_ != description.finals.get.head)
+    if (states.length > INSTRUCTIONS_NAMES.length)
+      throw new IllegalArgumentException(
+        s"In description ${description.name.get} more than ${INSTRUCTIONS_NAMES.length} transitions. I can't simplified it."
+      )
+    if (description.finals.get.length > 1)
+      throw new IllegalArgumentException(
+        s"In description ${description.name.get} more than '1' finals states. I can't simplified it."
+      )
+
+    val mapping: Map[String, String] = (states.zip(INSTRUCTIONS_NAMES) :+ (description.finals.get.head, "H")).toMap
+
+    val shortTransitions = description.transitions.get.map { instr =>
+      mapping(instr._1) ->
+        instr._2.map { tr =>
+          Transition(tr.read.get, mapping(tr.toState.get), tr.write.get, tr.action.get.head.toString)
+        }
+    }
+
+    Description(
+      name        = description.name.get + "_simple",
+      alphabet    = description.alphabet.get,
+      blank       = description.blank.get,
+      states      = mapping.values.toList,
+      initial     = mapping(description.initial.get),
+      finals      = List(mapping(description.finals.get.head)),
+      transitions = shortTransitions
+    )
+  }
+
+  /** Return short description for run Universal Turing Machine */
   def generateString(description: Description): String = {
-    val trans = description.transitions.get
-    val tr = trans.map { state =>
+
+    val transitions = description.transitions.get.map { state =>
       state._1 + "[" + state._2.map(t => s"{${t.shortNotation}}").mkString + "]"
     }.mkString
-    description.initial.get + START + tr
+
+    description.initial.get + START + transitions
   }
 
   def main(args: Array[String]): Unit = {
 
-    println(args(0))
-    val description = Description.readDescription(args(0))
+    val descriptionFull = Description.readDescription(args(0))
+    val description     = createSimplifiedDescription(descriptionFull)
 
     val name     = NAME + ": " + description.name.get
     val input    = description.alphabet.get :+ BLANK
@@ -60,8 +105,6 @@ object UTM {
     val alphabet = input ++ states ++ SERVICE
 
     val prodStIn: List[(String, String)] = states.flatMap(s => input.map(i => (s, i)))
-
-    println(generateString(description))
 
     val transitions: mutable.HashMap[String, List[Transition]] =
       new mutable.HashMap[String, List[Transition]]() ++
@@ -164,7 +207,14 @@ object UTM {
       transitions = transitions.toMap
     )
 
-    val filename = s"./resources/utm_${description.name.get.replaceAll(" ", "_")}.json"
+    val filename = s"utm_${description.name.get.replaceAll(" ", "_")}.json"
     Using(new PrintWriter(filename))(_.write(res.toJSON))
+
+    println(
+      s"""
+         |Created Universal Turing Machine - $filename
+         |Usage:
+         |java -jar ft_turing.jar $filename '${generateString(description)}${SEP}input'""".stripMargin
+    )
   }
 }
