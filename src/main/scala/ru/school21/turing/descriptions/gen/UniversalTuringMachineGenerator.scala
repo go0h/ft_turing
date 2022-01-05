@@ -40,10 +40,12 @@ object UniversalTuringMachineGenerator {
 
   val INIT_STATE = "init"
 
-  val INSTRUCTIONS_NAMES: List[String] = "AaBbCcDdEeFfGghIiJjKklMmNnOoPpQqrSsTtUuVvWwXxYyZz"
+  val INSTRUCTIONS_NAMES: List[String] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
     .map(_.toString)
-    .sorted
+    .toSet
+    .removedAll(SERVICE)
     .toList
+    .sorted
 
   def createAndSaveUniversalDescriptions(description: Description): Unit = {
     val name = s"utm_${description.name.get.replaceAll(" ", "_")}.json"
@@ -62,7 +64,13 @@ object UniversalTuringMachineGenerator {
   def createSimplifiedDescription(description: Description): Description = {
 
     val states = description.states.get.filter(_ != description.finals.get.head)
-    if (states.length > INSTRUCTIONS_NAMES.length)
+
+    val allowedInstructions = INSTRUCTIONS_NAMES
+      .toSet
+      .removedAll(description.alphabet.get)
+      .toList
+
+    if (states.length > allowedInstructions.length)
       throw new IllegalArgumentException(
         s"In description ${description.name.get} more than ${INSTRUCTIONS_NAMES.length} transitions. I can't simplified it."
       )
@@ -92,7 +100,7 @@ object UniversalTuringMachineGenerator {
   }
 
   /** Return short description for run Universal Turing Machine */
-  def generateShorDescription(description: Description): String = {
+  def generateShortDescription(description: Description): String = {
 
     val transitions = description.transitions.get.map { state =>
       state._1 + ST_BR_L + state._2.map(t => s"{${t.shortNotation}}").mkString + ST_BR_R
@@ -230,7 +238,7 @@ object UniversalTuringMachineGenerator {
       s"""
          |Created Universal Turing Machine - $name
          |Usage:
-         |java -jar ft_turing.jar $name '${generateShorDescription(description)}${SEP}input'""".stripMargin
+         |java -jar ft_turing.jar $name '${generateShortDescription(description)}${SEP}input'""".stripMargin
     )
   }
 }
