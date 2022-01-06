@@ -34,7 +34,6 @@ class TuringProcessor(description: Description, tape: Tape, verbose: Boolean = t
 
 object TuringProcessor {
 
-  def apply(description: Description, input: Tape, verbose: Boolean = true): TuringProcessor = {
+  def apply(description: Description, input: Tape, verbose: Boolean = true): TuringProcessor =
     new TuringProcessor(description, input, verbose)
-  }
 }

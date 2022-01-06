@@ -3,11 +3,11 @@ package ru.school21.turing.descriptions
 import ru.school21.turing.descriptions.exceptions.TuringLogicException
 
 final case class Transition(
-                       read: Option[String],
-                       toState: Option[String],
-                       write: Option[String],
-                       action: Option[String]
-                     ) extends JsonStruct {
+  read: Option[String],
+  toState: Option[String],
+  write: Option[String],
+  action: Option[String]
+) extends JsonStruct {
 
   def checkTransitions(field: String, alphabet: List[String], states: List[String]): Unit = {
 
@@ -29,15 +29,14 @@ final case class Transition(
       )
   }
 
-  def getTransitionString(name: Option[String]): String = {
+  def getTransitionString(name: Option[String]): String =
     s"(${name.get}, ${read.get}) -> (${toState.get}, ${write.get}, ${action.get})"
-  }
 
   def shortNotation: String = read.get + toState.get + write.get + action.get(0)
 }
 
 object Transition {
-  def apply(read: String, toState: String, write: String, action: String): Transition = {
+
+  def apply(read: String, toState: String, write: String, action: String): Transition =
     new Transition(Some(read), Some(toState), Some(write), Some(action))
-  }
 }

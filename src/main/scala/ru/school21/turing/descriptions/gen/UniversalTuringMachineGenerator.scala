@@ -49,7 +49,7 @@ object UniversalTuringMachineGenerator {
 
   def createAndSaveUniversalDescriptions(description: Description): Unit = {
     val name = s"utm_${description.name.get.replaceAll(" ", "_")}.json"
-    val utm = createUniversalDescription(description)
+    val utm  = createUniversalDescription(description)
     saveDescriptionToFile(utm, name)
     printUsageForDescription(createSimplifiedDescription(description), name)
   }
@@ -63,12 +63,10 @@ object UniversalTuringMachineGenerator {
     */
   def createSimplifiedDescription(description: Description): Description = {
 
-    //TODO create intersection between INSTRUCTIONS_NAMES and INPUT from description
-    // rename transitions names
+    //TODO rename transitions names
     val states = description.states.get.filter(_ != description.finals.get.head)
 
-    val allowedInstructions = INSTRUCTIONS_NAMES
-      .toSet
+    val allowedInstructions = INSTRUCTIONS_NAMES.toSet
       .removedAll(description.alphabet.get)
       .toList
 
@@ -79,6 +77,11 @@ object UniversalTuringMachineGenerator {
     if (description.finals.get.length > 1)
       throw new IllegalArgumentException(
         s"In description ${description.name.get} more than 1 finals states. I can't simplified it."
+      )
+    val intersect = description.alphabet.get.toSet.intersect(SERVICE.toSet)
+    if (intersect.nonEmpty)
+      throw new IllegalArgumentException(
+        s"Description ${description.name.get} has reserved UTM characters '${intersect.mkString(", ")}' in alphabet"
       )
 
     val mapping: Map[String, String] = (states.zip(INSTRUCTIONS_NAMES) :+ (description.finals.get.head, "H")).toMap
@@ -113,7 +116,7 @@ object UniversalTuringMachineGenerator {
 
   def createUniversalDescription(descriptionFull: Description): Description = {
 
-    val description     = createSimplifiedDescription(descriptionFull)
+    val description = createSimplifiedDescription(descriptionFull)
 
     val name     = NAME + ": " + description.name.get
     val input    = description.alphabet.get :+ BLANK
@@ -235,12 +238,11 @@ object UniversalTuringMachineGenerator {
     name
   }
 
-  def printUsageForDescription(description: Description, name: String): Unit = {
+  def printUsageForDescription(description: Description, name: String): Unit =
     println(
       s"""
          |Created Universal Turing Machine - $name
          |Usage:
          |java -jar ft_turing.jar $name '${generateShortDescription(description)}${SEP}input'""".stripMargin
     )
-  }
 }

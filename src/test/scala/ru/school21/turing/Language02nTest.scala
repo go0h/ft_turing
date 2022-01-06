@@ -10,11 +10,10 @@ class Language02nTest extends AnyFunSuite {
 
   val language0n1n: Description = getParsedDescription("resources/language_02n.json")
 
-  def getResult(input: String): String = {
+  def getResult(input: String): String =
     TuringProcessor(language0n1n, input, verbose = false)
       .process()
       .replaceAll("^[0]++", "")
-  }
 
   def isPowerOfTwo(n: Int): Boolean = (n & (n - 1)) == 0
 
@@ -43,7 +42,7 @@ class Language02nTest extends AnyFunSuite {
   }
 
   test("Check 0^(2n) from 1 to 4096") {
-    (1 to 4096).foreach{ n =>
+    (1 to 4096).foreach { n =>
       val str = "0" * n
       val res = getResult(str)
       if (isPowerOfTwo(n)) {

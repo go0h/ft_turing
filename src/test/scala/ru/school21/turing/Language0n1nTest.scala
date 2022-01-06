@@ -10,11 +10,10 @@ class Language0n1nTest extends AnyFunSuite {
 
   val language0n1n: Description = getParsedDescription("resources/language_0n1n.json")
 
-  def getResult(input: String): String = {
+  def getResult(input: String): String =
     TuringProcessor(language0n1n, input, verbose = false)
       .process()
       .replaceAll("^[.]++", "")
-  }
 
   test("Correct Language 0n1n - 01") {
     assert(getResult("01") == "y")

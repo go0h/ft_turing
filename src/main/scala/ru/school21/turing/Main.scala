@@ -1,9 +1,10 @@
 package ru.school21.turing
 
-import scopt.OParser
+import scala.util.Using
 import ru.school21.turing.descriptions.Description
 import ru.school21.turing.descriptions.gen.UniversalTuringMachineGenerator.createAndSaveUniversalDescriptions
 import ru.school21.turing.processor.TuringProcessor
+import scopt.OParser
 
 object Main {
 
@@ -11,7 +12,8 @@ object Main {
 
     val config: Config = OParser.parse(parser, args, Config()) match {
       case Some(config) => config
-      case _ => System.exit(1)
+      case _ =>
+        System.exit(1)
         Config()
     }
 
@@ -21,12 +23,15 @@ object Main {
       if (config.gen) {
         createAndSaveUniversalDescriptions(description)
       } else {
-        //TODO add read from STDIN
-        val res = TuringProcessor(description, config.input)
+
+        val input =
+          if (config.input == null) Using(io.Source.stdin)(_.getLines().reduce(_ + _)).get
+          else config.input
+
+        val res = TuringProcessor(description, input)
           .process()
         println(res)
       }
-
     } catch {
       case e: Exception => println(e.getMessage)
     }

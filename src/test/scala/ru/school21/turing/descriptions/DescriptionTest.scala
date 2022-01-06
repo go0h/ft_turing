@@ -13,11 +13,11 @@ object DescriptionTest {
 
   implicit val formats: Formats = DefaultFormats
 
-  def getJSONString(filename: String): String = {
-    Source.fromResource(filename)
+  def getJSONString(filename: String): String =
+    Source
+      .fromResource(filename)
       .getLines()
       .reduce(_ + _)
-  }
 
   def getParsedDescription(filename: String): Description = {
     val json = getJSONString(filename)
@@ -32,7 +32,8 @@ class DescriptionTest extends AnyFunSuite {
   test("Bad JSON - 1") {
     val json = getJSONString("bad/unary_sub_1.json")
     assertThrows[JsonParseException] {
-      parse(json).transformField(transformFields)
+      parse(json)
+        .transformField(transformFields)
         .extract[Description]
     }
   }
@@ -75,12 +76,12 @@ class DescriptionTest extends AnyFunSuite {
   test("Check blank") {
 
     val description = Description(
-      name = "unary_sub",
-      alphabet = List("blank", "init"),
-      blank = "blnk",
-      states = List("final", "int1"),
-      initial = "int",
-      finals = List("final"),
+      name        = "unary_sub",
+      alphabet    = List("blank", "init"),
+      blank       = "blnk",
+      states      = List("final", "int1"),
+      initial     = "int",
+      finals      = List("final"),
       transitions = Map[String, List[Transition]]()
     )
 
@@ -92,12 +93,12 @@ class DescriptionTest extends AnyFunSuite {
   test("Check initial") {
 
     val description = Description(
-      name = "unary_sub",
-      alphabet = List("blank", "init"),
-      blank = "blank",
-      states = List("final", "int1"),
-      initial = "int",
-      finals = List("final"),
+      name        = "unary_sub",
+      alphabet    = List("blank", "init"),
+      blank       = "blank",
+      states      = List("final", "int1"),
+      initial     = "int",
+      finals      = List("final"),
       transitions = Map[String, List[Transition]]()
     )
 
@@ -109,12 +110,12 @@ class DescriptionTest extends AnyFunSuite {
   test("Check finals") {
 
     val description = Description(
-      name = "unary_sub",
-      alphabet = List("blank", "init"),
-      blank = "blank",
-      states = List("final1", "int1"),
-      initial = "int",
-      finals = List("final"),
+      name        = "unary_sub",
+      alphabet    = List("blank", "init"),
+      blank       = "blank",
+      states      = List("final1", "int1"),
+      initial     = "int",
+      finals      = List("final"),
       transitions = Map[String, List[Transition]]()
     )
 
@@ -126,12 +127,12 @@ class DescriptionTest extends AnyFunSuite {
   test("Check READ and WRITE states") {
 
     val description = Description(
-      name = "unary_sub",
-      alphabet = List("blank", "init"),
-      blank = "blank",
-      states = List("final1", "int1"),
-      initial = "int",
-      finals = List("final"),
+      name        = "unary_sub",
+      alphabet    = List("blank", "init"),
+      blank       = "blank",
+      states      = List("final1", "int1"),
+      initial     = "int",
+      finals      = List("final"),
       transitions = Map[String, List[Transition]]()
     )
 

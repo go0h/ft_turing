@@ -7,14 +7,14 @@ import scala.language.implicitConversions
 
 class Tape(in: String) {
 
-  private var pos = 0
+  private var pos         = 0
   val tape: Array[String] = createTapeFromInput
 
   def cur: String = tape(pos)
 
   def cur(s: String): Unit = tape(pos) = s
 
-  def apply(transitions: Seq[Transition]): Unit = { }
+  def apply(transitions: Seq[Transition]): Unit = {}
 
   def apply(transition: Transition): Unit = {
     tape(pos) = transition.write.get
@@ -31,29 +31,29 @@ class Tape(in: String) {
       throw new IllegalArgumentException("Tape is empty")
 
     (shortedIn + ("." * ((if (shortedIn.length + 2 < 30) 30 else shortedIn.length + 5) - shortedIn.length)))
-      .map(_.toString).toArray
+      .map(_.toString)
+      .toArray
   }
 
   private def shift(direction: String): Unit = {
     direction.toLowerCase match {
-      case "left" => pos -= 1
+      case "left"  => pos -= 1
       case "right" => pos += 1
-      case _ => throw new IllegalArgumentException(s"Wrong direction: $direction")
+      case _       => throw new IllegalArgumentException(s"Wrong direction: $direction")
     }
 
     if (pos < 0 || pos >= tape.length)
       throw new IndexOutOfBoundsException(s"Error: End of tape. Position = $pos")
   }
 
-  override def toString: String = {
+  override def toString: String =
     "[" + tape.take(pos).mkString("") + RED + tape(pos) + RESET + tape.slice(pos + 1, tape.length).mkString("") + "]"
-  }
 }
 
 object Tape {
 
   val RESET = "\u001B[0m"
-  val RED = "\u001B[41m"
+  val RED   = "\u001B[41m"
 
   def apply(input: String): Tape = new Tape(input)
 

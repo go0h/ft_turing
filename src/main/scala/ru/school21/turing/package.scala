@@ -4,14 +4,14 @@ import scopt.{OParser, OParserBuilder}
 
 package object turing {
 
-  case class Config(
-                     description: String = "",
-                     input: String = "",
-                     gen: Boolean = false,
-                     verbose: Boolean = false,
-                     debug: Boolean = false)
+  case class Config(description: String = "",
+                    input: String       = null,
+                    gen: Boolean        = false,
+                    verbose: Boolean    = false,
+                    debug: Boolean      = false)
 
   val builder: OParserBuilder[Config] = OParser.builder[Config]
+
   val parser: OParser[Unit, Config] = {
     import builder._
     OParser.sequence(

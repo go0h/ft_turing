@@ -9,11 +9,10 @@ class PalindromeTest extends AnyFunSuite {
 
   val palindrome: Description = getParsedDescription("resources/palindrome.json")
 
-  def getResult(input: String): String = {
+  def getResult(input: String): String =
     TuringProcessor(palindrome, input, verbose = false)
       .process()
       .replaceAll("^[.]++", "")
-  }
 
   test("Correct Even Palindrome - aa") {
     assert(getResult("aa") == "y")
