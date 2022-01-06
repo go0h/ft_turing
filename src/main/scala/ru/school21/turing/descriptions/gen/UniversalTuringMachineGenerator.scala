@@ -6,23 +6,21 @@ import java.io.PrintWriter
 import scala.collection.mutable
 import scala.util.Using
 
+/** Generate Universal Turing Machine description for input description
+  * All states rename to one char. Example for states
+  * [ "first", "second", "third" ] renamed to [ "A', "B", "C" ]
+  *
+  * Generate short description which need to put in input to generated UTM description.
+  * RESERVED CHARS - ! { } [ ] L R H * # _
+  *
+  * Example of short description:
+  *    A!A[{.A.R}{1A1R}{+C+R}{=H.R}]C[{1B+L}{+C1R}{=D.L}{.C.R}]B[{+A1R}{.B.L}]D[{.D.L}{+D.L}{1H1L}]
+  *    A - initial state
+  *    A[ ] - state, A - state_name
+  *    { } - transition. Example - {.A.R} - { "read" : ".", "to_state": "A", "write": ".", "action": "RIGHT"}
+  */
 object UniversalTuringMachineGenerator {
 
-  /**
-    * Original - unary_add_simple.json
-    * S[ ] - states, S - state_name
-    * { } - transitions
-    * {.S.R} - { "read" : ".", "to_state": "scanright", "write": ".", "action": "RIGHT"}
-    *
-    * scanright - S[{1S1R}{+A.R}{.H.L}]
-    * addone -    A[{[1W+L}{.H.L]}]
-    * writeone -  W[{.S1R}]
-    *
-    * Пример кодировки S!S[{1S1R}{+A.R}{.H.L}]A[{[1W+L}{.H.L]}]W[{.S1R}]
-    * S - начальное состояние
-    * ALPHABET - ! { } [ ] R L S A W H 1 . +
-    *
-    */
   val NAME = "Universal Turing Machine"
 
   val START                 = "!"
@@ -55,7 +53,7 @@ object UniversalTuringMachineGenerator {
   }
 
   /**
-    * @return Simplified description.
+    * @return Simplified Description.
     *         All transitions renamed to one char string from INSTRUCTIONS_NAMES.
     *         Example for description <b>unary_add</b>:
     *         transition <b>scanright</b> renamed to <b>A</b>, <b>addone</b> renamed to <b>B</b>, etc.
@@ -63,7 +61,6 @@ object UniversalTuringMachineGenerator {
     */
   def createSimplifiedDescription(description: Description): Description = {
 
-    //TODO rename transitions names
     val states = description.states.get.filter(_ != description.finals.get.head)
 
     val allowedInstructions = INSTRUCTIONS_NAMES.toSet
@@ -104,7 +101,7 @@ object UniversalTuringMachineGenerator {
     )
   }
 
-  /** Return short description for run Universal Turing Machine */
+  /** Return short description in order to run Universal Turing Machine */
   def generateShortDescription(description: Description): String = {
 
     val transitions = description.transitions.get.map { state =>
@@ -127,20 +124,20 @@ object UniversalTuringMachineGenerator {
 
     val transitions: mutable.HashMap[String, List[Transition]] =
       new mutable.HashMap[String, List[Transition]]() ++
-        Map(INIT_STATE -> states.map(state => Transition(state, s"go_to_null_$state", state, "RIGHT"))) ++
-        /* Go to first character in INPUT */
+        Map(INIT_STATE -> states.map(state => Transition(state, s"go_to_first_char__$state", state, "RIGHT"))) ++
+        /* go to first INPUT char with init state */
         states.map { state =>
-          s"go_to_null_$state" ->
+          s"go_to_first_char__$state" ->
             alphabet.map { a =>
-              if (a != SEP) Transition(a, s"go_to_null_$state", a, "RIGHT")
-              else Transition(SEP, s"go_to_state_$state", SEP, "RIGHT")
+              if (a != SEP) Transition(a, s"go_to_first_char__$state", a, "RIGHT")
+              else Transition(SEP, s"go_to_state__$state", SEP, "RIGHT")
             }
         } ++
-        /* when character is found, then start to go to transition */
+        /* when character is found, then go to start of description */
         states.map { state =>
-          s"go_to_state_$state" ->
+          s"go_to_state__$state" ->
             (if (state != HALT) input.map { in =>
-               Transition(in, s"init_find_$state-$in", PTR, "LEFT")
+               Transition(in, s"go_to_start__$state[$in]", PTR, "LEFT")
              } else
                input.map { in =>
                  Transition(in, "HALT", in, "RIGHT")
@@ -149,81 +146,81 @@ object UniversalTuringMachineGenerator {
         /* go to start of description, to 'START'(!) character */
         prodStIn.map { x =>
           val (state, in) = x
-          s"init_find_$state-$in" ->
+          s"go_to_start__$state[$in]" ->
             alphabet.map { a =>
-              if (a != START) Transition(a, s"init_find_$state-$in", a, "LEFT")
-              else Transition(START, s"find_state_$state($in)", START, "RIGHT")
+              if (a != START) Transition(a, s"go_to_start__$state[$in]", a, "LEFT")
+              else Transition(START, s"find_state__$state[$in]", START, "RIGHT")
             }
         } ++
-        /* find state in description, tries to find 'state' char */
+        /* find state in description */
         prodStIn.map { x =>
           val (state, in) = x
-          s"find_state_$state($in)" ->
+          s"find_state__$state[$in]" ->
             ((input ++ SERVICE).filter(_ != SEP).map { a =>
-              Transition(a, s"find_state_$state($in)", a, "RIGHT")
+              Transition(a, s"find_state__$state[$in]", a, "RIGHT")
             } ++
               states.filter(_ != state).map { a =>
-                Transition(a, s"find_state_$state($in)", a, "RIGHT")
+                Transition(a, s"find_state__$state[$in]", a, "RIGHT")
               } :+
-              Transition(state, s"check_op_$state-($in)", state, "RIGHT"))
+              Transition(state, s"check_state__$state[$in]", state, "RIGHT"))
         } ++
-        /* if 'state' char is found, then check char '[' at right, if OK, then find transition */
+        /* if 'state' char is found, then check char '[' at right, if OK, then check read char */
         prodStIn.map { x =>
           val (state, in) = x
-          s"check_op_$state-($in)" ->
+          s"check_state__$state[$in]" ->
             alphabet.map { a =>
-              if (a != ST_BR_L) Transition(a, s"find_state_$state($in)", a, "RIGHT")
-              else Transition(ST_BR_L, s"cmp_read_$state($in)", ST_BR_L, "RIGHT")
+              if (a != ST_BR_L) Transition(a, s"find_state__$state[$in]", a, "RIGHT")
+              else Transition(ST_BR_L, s"check_read_char__$state[$in]", ST_BR_L, "RIGHT")
             }
         } ++
-        /* find transition in state */
+        /* if read char is OK, go to get next transition, otherwise go to next transition  */
         prodStIn.map { x =>
           val (state, in) = x
-          s"cmp_read_$state($in)" ->
+          s"check_read_char__$state[$in]" ->
             alphabet.filter(_ != ST_BR_R).map { a =>
-              if (a == in) Transition(in, s"get_state_$in", in, "RIGHT")
-              else if (a == TR_BR_L) Transition(TR_BR_L, s"cmp_read_$state($in)", TR_BR_L, "RIGHT")
-              else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
+              if (a == in) Transition(in, s"get_next_state__$in", in, "RIGHT")
+              else if (a == TR_BR_L) Transition(TR_BR_L, s"check_read_char__$state[$in]", TR_BR_L, "RIGHT")
+              else Transition(a, s"go_to_next_trans__$state[$in]", a, "RIGHT")
             }
         } ++
-        /* get direction where to move */
+        /* get direction from transition */
         input.map { in =>
-          s"get_state_$in" -> states.map { s =>
-            Transition(s, s"get_dir_$s", s, "RIGHT")
+          s"get_next_state__$in" -> states.map { state =>
+            Transition(state, s"get_direction__$state", state, "RIGHT")
           }
         } ++
         /* get char which need to write in this transition */
         states.map { state =>
-          s"get_dir_$state" ->
+          s"get_direction__$state" ->
             (List(RIGHT, LEFT) ++ input).map { dir =>
-              if (dir == LEFT || dir == RIGHT) Transition(dir, s"get_write_$state:$dir", dir, "LEFT")
-              else Transition(dir, s"get_dir_$state", dir, "RIGHT")
+              if (dir == LEFT || dir == RIGHT) Transition(dir, s"get_write_char__$state[$dir]", dir, "LEFT")
+              else Transition(dir, s"get_direction__$state", dir, "RIGHT")
             }
         } ++
-        /* go to input and replace char */
+        /* go to pointer and do job (replace char) */
         states.flatMap(s => List(RIGHT, LEFT).map(i => (s, i))).map { x =>
           val (state, dir) = x
-          s"get_write_$state:$dir" ->
+          s"get_write_char__$state[$dir]" ->
             input.map { in =>
-              Transition(in, s"eval_$dir($in)~$state", in, "RIGHT")
+              Transition(in, s"do_job__$state[$in]_then_$dir", in, "RIGHT")
             }
         } ++
         /* find transition in state */
         prodStIn.map { x =>
           val (state, in) = x
-          s"to_next_trans_$state($in)" ->
+          s"go_to_next_trans__$state[$in]" ->
             alphabet.filter(_ != ST_BR_R).map { a =>
-              if (a == TR_BR_R) Transition(TR_BR_R, s"cmp_read_$state($in)", TR_BR_R, "RIGHT")
-              else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
+              if (a == TR_BR_R) Transition(TR_BR_R, s"check_read_char__$state[$in]", TR_BR_R, "RIGHT")
+              else Transition(a, s"go_to_next_trans__$state[$in]", a, "RIGHT")
             }
         } ++
         /* go to char in input, and replace it, then go to next char */
         states.flatMap(s => List(RIGHT, LEFT).flatMap(dir => input.map(in => (s, dir, in)))).map { x =>
           val (state, dir, in) = x
-          s"eval_$dir($in)~$state" ->
+          s"do_job__$state[$in]_then_$dir" ->
             alphabet.map { a =>
-              if (a != PTR) Transition(a, s"eval_$dir($in)~$state", a, "RIGHT")
-              else Transition(PTR, s"go_to_state_$state", in, if (dir == RIGHT) "RIGHT" else "LEFT")
+              if (a != PTR) Transition(a, s"do_job__$state[$in]_then_$dir", a, "RIGHT")
+              else Transition(PTR, s"go_to_state__$state", in, if (dir == RIGHT) "RIGHT" else "LEFT")
             }
         }
 
