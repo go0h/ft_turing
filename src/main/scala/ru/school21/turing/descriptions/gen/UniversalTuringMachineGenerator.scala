@@ -128,6 +128,7 @@ object UniversalTuringMachineGenerator {
     val transitions: mutable.HashMap[String, List[Transition]] =
       new mutable.HashMap[String, List[Transition]]() ++
         Map(INIT_STATE -> states.map(state => Transition(state, s"go_to_null_$state", state, "RIGHT"))) ++
+        /* Go to first character in INPUT */
         states.map { state =>
           s"go_to_null_$state" ->
             alphabet.map { a =>
@@ -135,6 +136,7 @@ object UniversalTuringMachineGenerator {
               else Transition(SEP, s"go_to_state_$state", SEP, "RIGHT")
             }
         } ++
+        /* when character is found, then start to go to transition */
         states.map { state =>
           s"go_to_state_$state" ->
             (if (state != HALT) input.map { in =>
@@ -144,6 +146,7 @@ object UniversalTuringMachineGenerator {
                  Transition(in, "HALT", in, "RIGHT")
                })
         } ++
+        /* go to start of description, to 'START'(!) character */
         prodStIn.map { x =>
           val (state, in) = x
           s"init_find_$state-$in" ->
@@ -152,6 +155,7 @@ object UniversalTuringMachineGenerator {
               else Transition(START, s"find_state_$state($in)", START, "RIGHT")
             }
         } ++
+        /* find state in description, tries to find 'state' char */
         prodStIn.map { x =>
           val (state, in) = x
           s"find_state_$state($in)" ->
@@ -163,6 +167,7 @@ object UniversalTuringMachineGenerator {
               } :+
               Transition(state, s"check_op_$state-($in)", state, "RIGHT"))
         } ++
+        /* if 'state' char is found, then check char '[' at right, if OK, then find transition */
         prodStIn.map { x =>
           val (state, in) = x
           s"check_op_$state-($in)" ->
@@ -171,6 +176,7 @@ object UniversalTuringMachineGenerator {
               else Transition(ST_BR_L, s"cmp_read_$state($in)", ST_BR_L, "RIGHT")
             }
         } ++
+        /* find transition in state */
         prodStIn.map { x =>
           val (state, in) = x
           s"cmp_read_$state($in)" ->
@@ -180,11 +186,13 @@ object UniversalTuringMachineGenerator {
               else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
             }
         } ++
+        /* get direction where to move */
         input.map { in =>
           s"get_state_$in" -> states.map { s =>
             Transition(s, s"get_dir_$s", s, "RIGHT")
           }
         } ++
+        /* get char which need to write in this transition */
         states.map { state =>
           s"get_dir_$state" ->
             (List(RIGHT, LEFT) ++ input).map { dir =>
@@ -192,6 +200,7 @@ object UniversalTuringMachineGenerator {
               else Transition(dir, s"get_dir_$state", dir, "RIGHT")
             }
         } ++
+        /* go to input and replace char */
         states.flatMap(s => List(RIGHT, LEFT).map(i => (s, i))).map { x =>
           val (state, dir) = x
           s"get_write_$state:$dir" ->
@@ -199,6 +208,7 @@ object UniversalTuringMachineGenerator {
               Transition(in, s"eval_$dir($in)~$state", in, "RIGHT")
             }
         } ++
+        /* find transition in state */
         prodStIn.map { x =>
           val (state, in) = x
           s"to_next_trans_$state($in)" ->
@@ -207,6 +217,7 @@ object UniversalTuringMachineGenerator {
               else Transition(a, s"to_next_trans_$state($in)", a, "RIGHT")
             }
         } ++
+        /* go to char in input, and replace it, then go to next char */
         states.flatMap(s => List(RIGHT, LEFT).flatMap(dir => input.map(in => (s, dir, in)))).map { x =>
           val (state, dir, in) = x
           s"eval_$dir($in)~$state" ->
