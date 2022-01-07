@@ -6,7 +6,8 @@
   "initial" : "init",
   "finals" : [ "HALT" ],
   "transitions" : {
-    "find_state__G[b]" : [ {
+    "find_state__G[b]" : [
+     {
       "read" : "1",
       "toState" : "find_state__G[b]",
       "write" : "1",

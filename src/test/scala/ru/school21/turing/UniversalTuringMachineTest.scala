@@ -246,7 +246,7 @@ class UniversalTuringMachineTest extends AnyFunSuite {
     assert(getResult(LANG_02N, "00000000000000000000000000000000") == "y")
   }
 
-  test("Bad Language 0^(2n) - 000000000000000000000000000000000") {
+  test("UTM Bad Language 0^(2n) - 000000000000000000000000000000000") {
     assert(getResult(LANG_02N, "000000000000000000000000000000000") == "n")
   }
 }
