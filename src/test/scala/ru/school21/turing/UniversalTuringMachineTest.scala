@@ -8,7 +8,6 @@ import ru.school21.turing.processor.TuringProcessor
 import ru.school21.turing.processor.TuringProcessorTest.getParsedDescription
 import ru.school21.turing.descriptions.gen.UniversalTuringMachineGenerator.{
   createSimplifiedDescription,
-  createUniversalDescription,
   generateShortDescription,
   SEP
 }
@@ -17,12 +16,13 @@ class UniversalTuringMachineTest extends AnyFunSuite {
 
   val descriptions = new mutable.HashMap[String, (Description, String)]()
 
+  val UTM: Description = getParsedDescription("./resources/utm.json")
+
   def addUniversalDescription(name: String, filename: String): Unit = {
     val description: Description = getParsedDescription(filename)
-    val utd                      = createUniversalDescription(description)
     val shortDescription         = s"${generateShortDescription(createSimplifiedDescription(description))}$SEP"
 
-    descriptions.addOne(name -> (utd, shortDescription))
+    descriptions.addOne(name -> (UTM, shortDescription))
   }
 
   val UNARY_ADD  = "unary_add"

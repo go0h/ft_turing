@@ -49,3 +49,10 @@ Created Universal Turing Machine - utm_unary_add.json
 Usage:
 java -jar ft_turing.jar utm_unary_add.json 'A!A[{.A.R}{1A1R}{+C+R}{=H.R}]C[{1B+L}{+C1R}{=D.L}{.C.R}]B[{+A1R}{.B.L}]D[{.D.L}{+D.L}{1H1L}]#input'
 ```
+
+#### OR You may use utm.json file with next short descriptions:
+1. unary_add ```'A!A[{.A.R}{1A1R}{+C+R}{=H.R}]C[{1B+L}{+C1R}{=D.L}{.C.R}]B[{+A1R}{.B.L}]D[{.D.L}{+D.L}{1H1L}]#input'```
+2. unary_sub ```'A!A[{.A.R}{1A1R}{-A-R}{=B.L}]B[{1C=L}{-H.L}]C[{1C1L}{-D-L}]D[{.D.L}{1A.R}]#input'```
+3. palindrome ```'A!E[{.F.L}{aEaR}{bEbR}]F[{aC.L}{bDnL}{.HyR}]A[{aE.R}{bG.R}{.H.R}]I[{bC.L}{aDnL}{.HyR}]G[{.I.L}{aGaR}{bGbR}]B[{.A.R}{aBaL}{bBbL}]C[{.HyR}{aBaL}{bBbL}]D[{aD.L}{bD.L}{.H.R}]#input'```
+4. language 0n1n ```'A!E[{.B.R}{0E0L}{1E1L}]F[{0F.R}{1F.R}{.HnR}]A[{.A.R}{0C.R}{1F.R}]G[{0G.L}{1G.L}{.H.R}]B[{0C.R}{1F.R}{.HyR}]C[{.D.L}{0C0R}{1C1R}]D[{.F.R}{1E.L}{0GnL}]#input'```
+5. language 0^(2n) ```'A!E[{-E-R}{0D0R}{.B.L}]J[{0J0R}{-J0R}{.HnL}]F[{0F0L}{-F0L}{|G0R}]A[{0C|R}]I[{0I0L}{-I0L}{|J0R}]G[{0G0R}{-G0R}{.HyL}]B[{0B0L}{-B-L}{|C|R}]C[{0E-R}{-C-R}{.F.L}]D[{-D-R}{0E-R}{.I.L}]#input'```
