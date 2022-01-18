@@ -52,6 +52,13 @@ class DescriptionTest extends AnyFunSuite {
     }
   }
 
+  test("Empty field - 4") {
+    assertThrows[EmptyFieldException] {
+      getParsedDescription("bad/empty_field_4.json")
+        .checkEmptyFields()
+    }
+  }
+
   test("Empty string") {
     assertThrows[EmptyFieldException] {
       getParsedDescription("bad/empty_field_3.json")

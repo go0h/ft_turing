@@ -1,13 +1,13 @@
 package ru.school21.turing.descriptions
 
-import ru.school21.turing.descriptions.exceptions.TuringLogicException
+import ru.school21.turing.descriptions.exceptions.{EmptyFieldException, TuringLogicException}
 
 final case class Transition(
   read: Option[String],
   toState: Option[String],
   write: Option[String],
   action: Option[String]
-) extends JsonStruct {
+) {
 
   def checkTransitions(field: String, alphabet: List[String], states: List[String]): Unit = {
 
@@ -33,6 +33,23 @@ final case class Transition(
     s"(${name.get}, ${read.get}) -> (${toState.get}, ${write.get}, ${action.get})"
 
   def shortNotation: String = read.get + toState.get + write.get + action.get(0)
+
+//  def checkEmptyFields(): Unit =
+//    this.productIterator.exists {
+//      case Some(str: String) if str.trim.nonEmpty => true
+//      case _                                      => throw new EmptyFieldException("to_state", getClass.getSimpleName)
+//    }
+
+  def checkEmptyFields(): Unit = {
+    if (read.getOrElse("").trim.isEmpty)
+      throw new EmptyFieldException("read", getClass.getSimpleName)
+    if (toState.getOrElse("").trim.isEmpty)
+      throw new EmptyFieldException("to_state", getClass.getSimpleName)
+    if (write.getOrElse("").trim.isEmpty)
+      throw new EmptyFieldException("write", getClass.getSimpleName)
+    if (action.getOrElse("").trim.isEmpty)
+      throw new EmptyFieldException("action", getClass.getSimpleName)
+  }
 }
 
 object Transition {
