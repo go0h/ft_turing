@@ -135,12 +135,12 @@ class DescriptionTest extends AnyFunSuite {
 
     val description = Description(
       name        = "unary_sub",
-      alphabet    = List("blank", "init"),
-      blank       = "blank",
+      alphabet    = List("a", "b"),
+      blank       = "b",
       states      = List("final1", "int1"),
       initial     = "int",
       finals      = List("final"),
-      transitions = Map[String, List[Transition]]()
+      transitions = Map[String, List[Transition]]("int1" -> List(Transition("a", "int1", "b", "LEFT")))
     )
 
     assertThrows[TuringLogicException](

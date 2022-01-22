@@ -34,12 +34,6 @@ final case class Transition(
 
   def shortNotation: String = read.get + toState.get + write.get + action.get(0)
 
-//  def checkEmptyFields(): Unit =
-//    this.productIterator.exists {
-//      case Some(str: String) if str.trim.nonEmpty => true
-//      case _                                      => throw new EmptyFieldException("to_state", getClass.getSimpleName)
-//    }
-
   def checkEmptyFields(): Unit = {
     if (read.getOrElse("").trim.isEmpty)
       throw new EmptyFieldException("read", getClass.getSimpleName)

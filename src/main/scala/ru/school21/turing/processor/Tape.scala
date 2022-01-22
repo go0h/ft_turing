@@ -7,19 +7,11 @@ import scala.language.implicitConversions
 
 class Tape(in: String) {
 
-  private var pos         = 0
   val tape: Array[String] = createTapeFromInput
 
-  def cur: String = tape(pos)
+  def apply(i: Int): String = tape(i)
 
-  def cur(s: String): Unit = tape(pos) = s
-
-  def apply(transitions: Seq[Transition]): Unit = {}
-
-  def apply(transition: Transition): Unit = {
-    tape(pos) = transition.write.get
-    shift(transition.action.get)
-  }
+  def apply(transition: Transition, pos: Int): Unit = tape(pos) = transition.write.get
 
   def getResult: String = tape.mkString("").replaceAll("[.]+$", "")
 
@@ -35,18 +27,7 @@ class Tape(in: String) {
       .toArray
   }
 
-  private def shift(direction: String): Unit = {
-    direction.toLowerCase match {
-      case "left"  => pos -= 1
-      case "right" => pos += 1
-      case _       => throw new IllegalArgumentException(s"Wrong direction: $direction")
-    }
-
-    if (pos < 0 || pos >= tape.length)
-      throw new IndexOutOfBoundsException(s"Error: End of tape. Position = $pos")
-  }
-
-  override def toString: String =
+  def createStr(pos: Int): String =
     "[" + tape.take(pos).mkString("") + RED + tape(pos) + RESET + tape.slice(pos + 1, tape.length).mkString("") + "]"
 }
 

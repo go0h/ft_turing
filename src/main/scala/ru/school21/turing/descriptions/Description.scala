@@ -68,26 +68,22 @@ final case class Description(
     val trnsts = transitions.get
     val fnls   = finals.get
 
-    var hasFinals = false
-
     trnsts.foreach { field =>
       if (!stts.contains(field._1))
         throw new TuringLogicException(
           s"Transition '${field._1}' not in allowed states '${stts.mkString(", ")}'"
         )
       field._2 match {
-        case list: List[_] =>
-          list.foreach { transition: Transition =>
-            transition.checkTransitions(field._1, alphbt, stts)
-            hasFinals = fnls.contains(transition.toState.get) || hasFinals
-          }
+        case list: List[_] if list.nonEmpty => list.foreach(_.checkTransitions(field._1, alphbt, stts))
+        case _                              =>
       }
     }
 
-    if (!hasFinals)
-      throw new TuringLogicException(
-        s"Transitions has no final state '${finals.mkString(", ")}'"
-      )
+    trnsts.values
+      .reduce(_ ++ _)
+      .map(_.toState)
+      .find(tr => fnls.contains(tr.get))
+      .getOrElse(throw new TuringLogicException(s"Transitions has no final state '${finals.mkString(", ")}'"))
   }
 
   def getTransitions(name: Option[String]): List[Transition] = transitions.get(name.getOrElse(""))

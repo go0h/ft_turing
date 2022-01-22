@@ -16,20 +16,26 @@ class TuringProcessor(description: Description, tape: Tape, verbose: Boolean = t
 
     if (verbose) println(description)
 
-    process(description.getTransition(description.initial, tape.cur), description.initial)
+    process(getTransition(description.initial, tape(0)), description.initial, 0)
     tape.getResult
   }
 
   @tailrec
-  private def process(transition: Transition, transitionName: Option[String]): Unit = {
+  private def process(transition: Transition, transitionName: Option[String], pos: Int): Unit = {
     if (verbose) {
-      println(s"$tape ${transition.getTransitionString(transitionName)}")
+      println(s"${tape.createStr(pos)} ${transition.getTransitionString(transitionName)}")
     }
-    tape.apply(transition)
+    tape.apply(transition, pos)
     if (!description.isFinals(transition.toState)) {
-      process(description.getTransition(transition.toState, tape.cur), transition.toState)
+      val nextPos =
+        if (transition.action.get.toLowerCase == "left") pos - 1
+        else pos + 1
+      process(getTransition(transition.toState, tape(nextPos)), transition.toState, nextPos)
     }
   }
+
+  def getTransition(name: Option[String], read: String): Transition =
+    description.getTransition(name, read)
 }
 
 object TuringProcessor {
